@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* ── Light Mode (default) ──────────────────────────────────── */
+:root {
+  --background: #F7F5F2;
+  --surface: #FFFFFF;
+  --surface-tertiary: #F0EDE8;
+  --border: #D8DCE3;
+  --border-light: #C2C8D0;
+  --text-primary: #161B24;
+  --text-secondary: #5A6270;
+  --text-muted: #8A919C;
+  --accent-primary: #FFA586;
+  --accent-secondary: #B51A26;
+  --accent-tertiary: #541925;
+  --success: #2ECC71;
+  --warning: #F39C12;
+  --error: #E74C3C;
+  --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-glow-accent: 0 0 20px hsla(16, 100%, 76%, 0.25);
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+.dark {
+  --background: #161B24;
+  --surface: #242F49;
+  --surface-tertiary: #2C3855;
+  --border: #384358;
+  --border-light: #4A5A72;
+  --text-primary: #E8ECF1;
+  --text-secondary: #9BA8B8;
+  --text-muted: #6B7B8E;
+  --accent-primary: #FFA586;
+  --accent-secondary: #B51A26;
+  --accent-tertiary: #541925;
+  --success: #2ECC71;
+  --warning: #F39C12;
+  --error: #E74C3C;
+  --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow-accent: 0 0 20px hsla(16, 100%, 76%, 0.15);
+}
+
+/* ── Tailwind v4 Theme ─────────────────────────────────────── */
+@theme {
+  /* Semantic color tokens */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-tertiary: var(--accent-tertiary);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  /* Typography */
+  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* Spacing */
+  --spacing-section: 5rem;
+  --spacing-container: 1.25rem;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Shadows */
+  --shadow-elevation-1: var(--shadow-elevation-1);
+  --shadow-elevation-2: var(--shadow-elevation-2);
+  --shadow-elevation-3: var(--shadow-elevation-3);
+  --shadow-glow-accent: var(--shadow-glow-accent);
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-slide-down: slide-down 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Base Styles ───────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background-color: hsla(16, 100%, 76%, 0.25);
+  color: var(--text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-light);
+}
+
+/* Form elements base */
+input,
+textarea,
+select {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px hsla(16, 100%, 76%, 0.1);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Hero Grid Overlay ──────────────────────────────────────── */
+.hero-grid-overlay {
+  background-image:
+    linear-gradient(rgba(from var(--border) r g b / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(from var(--border) r g b / 0.08) 1px, transparent 1px);
+}
+
+.dark .hero-grid-overlay {
+  background-image:
+    linear-gradient(rgba(from var(--border) r g b / 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(from var(--border) r g b / 0.12) 1px, transparent 1px);
+}
