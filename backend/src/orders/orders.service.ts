@@ -238,4 +238,119 @@ export class OrdersService {
       },
     });
   }
+
+  async findAllAdmin(
+    filters: OrderFilterDto,
+  ): Promise<PaginatedResponse<object>> {
+    const {
+      page = 1,
+      limit = 20,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      status,
+    } = filters;
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.OrderWhereInput = {
+      ...(status && { status }),
+    };
+
+    const allowedSort = [
+      'createdAt',
+      'updatedAt',
+      'totalAmount',
+      'status',
+    ] as const;
+    const field = allowedSort.includes(sortBy as (typeof allowedSort)[number])
+      ? sortBy
+      : 'createdAt';
+
+    const [data, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [field]: sortOrder },
+        include: {
+          user: { select: { id: true, email: true, firstName: true, lastName: true } },
+          items: {
+            include: {
+              product: { select: { id: true, name: true, slug: true } },
+              productVariant: {
+                select: {
+                  id: true,
+                  sku: true,
+                  name: true,
+                  size: true,
+                  color: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.order.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async findOneAdmin(orderId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { id: true, email: true, firstName: true, lastName: true } },
+        items: {
+          include: {
+            product: {
+              select: { id: true, name: true, slug: true, imageUrl: true },
+            },
+            productVariant: {
+              select: {
+                id: true,
+                sku: true,
+                name: true,
+                price: true,
+                size: true,
+                color: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with id "${orderId}" not found`);
+    }
+
+    return order;
+  }
+
+  async getAdminStats() {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [totalOrders, pendingOrders, revenueResult] = await Promise.all([
+      this.prisma.order.count(),
+      this.prisma.order.count({ where: { status: 'PENDING' } }),
+      this.prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: {
+          createdAt: { gte: startOfMonth },
+          status: { not: 'CANCELLED' },
+        },
+      }),
+    ]);
+
+    return {
+      totalOrders,
+      pendingOrders,
+      monthlyRevenue: Number(revenueResult._sum.totalAmount ?? 0),
+    };
+  }
 }

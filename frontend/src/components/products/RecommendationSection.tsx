@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import type { Product } from "@/lib/api";
-import { API_BASE_URL } from "@/lib/api";
+import { getRecommendations } from "@/lib/api";
 
 /* ── Price helper (unchanged) ────────────────────────────── */
 function formatPrice(cents: number): string {
@@ -51,18 +51,7 @@ export default function RecommendationSection({
 
     async function fetchRecommendations() {
       try {
-        const res = await fetch(
-          `${API_BASE_URL}/products/${productId}/recommendations`,
-          {
-            cache: "no-store",
-            headers: { "Content-Type": "application/json" },
-          },
-        );
-        if (!res.ok) {
-          if (!cancelled) setVisible(false);
-          return;
-        }
-        const data: { source: string; products: Product[] } = await res.json();
+        const data = await getRecommendations(productId);
         if (!cancelled) {
           setProducts(data.products ?? []);
           setVisible((data.products ?? []).length > 0);

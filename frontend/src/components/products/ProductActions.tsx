@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import type { Product } from "@/lib/api";
-import { API_BASE_URL } from "@/lib/api";
+import { useCartStore } from "@/stores/cart-store";
 
 /* ── Helpers ──────────────────────────────────────────────── */
 
@@ -38,10 +38,10 @@ export default function ProductActions({ product }: { product: Product }) {
     sizes[0] ?? null,
   );
   const [quantity, setQuantity] = useState(1);
-  const [cartStatus, setCartStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
-  const [cartError, setCartError] = useState("");
+
+  const addToCart = useCartStore((s) => s.addToCart);
+  const cartStatus = useCartStore((s) => s.status);
+  const cartError = useCartStore((s) => s.error);
 
   /* Find the currently selected variant */
   const selectedVariant = useMemo(() => {
@@ -94,37 +94,12 @@ export default function ProductActions({ product }: { product: Product }) {
   /* Add to cart */
   const handleAddToCart = useCallback(async () => {
     if (!selectedVariant) return;
-    setCartStatus("loading");
-    setCartError("");
-    try {
-      const res = await fetch(`${API_BASE_URL}/cart/items`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-        body: JSON.stringify({
-          productId: product.id,
-          productVariantId: selectedVariant.id,
-          quantity,
-        }),
-      });
-      if (res.status === 401) {
-        setCartStatus("error");
-        setCartError("Sign in to add items to your cart");
-        return;
-      }
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        setCartStatus("error");
-        setCartError(body?.message ?? "Failed to add to cart");
-        return;
-      }
-      setCartStatus("success");
-      setTimeout(() => setCartStatus("idle"), 2000);
-    } catch {
-      setCartStatus("error");
-      setCartError("Network error — please try again");
-    }
-  }, [selectedVariant, product.id, quantity]);
+    await addToCart({
+      productId: product.id,
+      productVariantId: selectedVariant.id,
+      quantity,
+    });
+  }, [addToCart, selectedVariant, product.id, quantity]);
 
   return (
     <div className="flex flex-col gap-6">

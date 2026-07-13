@@ -12,6 +12,8 @@ import { CategoriesModule } from './categories/categories.module.js';
 import { ProductVariantsModule } from './product-variants/product-variants.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { AiModule } from './ai/ai.module.js';
+import { UploadModule } from './upload/upload.module.js';
+import { UsersModule } from './users/users.module.js';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { AiModule } from './ai/ai.module.js';
     CartModule,
     OrdersModule,
     AiModule,
+    UploadModule,
+    UsersModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

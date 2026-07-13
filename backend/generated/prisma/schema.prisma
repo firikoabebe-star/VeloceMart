@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+
+  @@map("roles")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cart   Cart?
+  orders Order[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  imageUrl    String?   @map("image_url")
+  categoryId  String    @map("category_id")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  category   Category         @relation(fields: [categoryId], references: [id])
+  variants   ProductVariant[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@index([categoryId])
+  @@index([slug])
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String   @id @default(uuid())
+  productId String   @map("product_id")
+  sku       String   @unique
+  name      String
+  size      String?
+  color     String?
+  price     Decimal  @db.Decimal(10, 2)
+  stock     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product    Product     @relation(fields: [productId], references: [id])
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@index([size])
+  @@index([color])
+  @@map("product_variants")
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id               String   @id @default(uuid())
+  cartId           String   @map("cart_id")
+  productId        String   @map("product_id")
+  productVariantId String   @map("product_variant_id")
+  quantity         Int      @default(1)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  cart           Cart           @relation(fields: [cartId], references: [id])
+  product        Product        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@unique([cartId, productVariantId])
+  @@index([cartId])
+  @@index([productVariantId])
+  @@map("cart_items")
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @map("total_amount") @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user  User        @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id               String   @id @default(uuid())
+  orderId          String   @map("order_id")
+  productId        String   @map("product_id")
+  productVariantId String   @map("product_variant_id")
+  quantity         Int      @default(1)
+  unitPrice        Decimal  @map("unit_price") @db.Decimal(10, 2)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  order          Order          @relation(fields: [orderId], references: [id])
+  product        Product        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@index([orderId])
+  @@index([productVariantId])
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+
+  @@map("order_status")
+}

@@ -88,4 +88,42 @@ export class OrdersController {
   ) {
     return this.ordersService.updateStatus(id, status);
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/all')
+  @ApiOperation({ summary: 'List all orders across users (admin only)' })
+  @ApiQuery({ name: 'status', required: false, enum: OrderStatus })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    enum: ['createdAt', 'updatedAt', 'totalAmount', 'status'],
+  })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
+  @ApiResponse({ status: 200, description: 'All orders paginated' })
+  findAllAdmin(@Query() filters: OrderFilterDto) {
+    return this.ordersService.findAllAdmin(filters);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/stats')
+  @ApiOperation({ summary: 'Get order statistics (admin only)' })
+  @ApiResponse({ status: 200, description: 'Order stats' })
+  getAdminStats() {
+    return this.ordersService.getAdminStats();
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/:id')
+  @ApiOperation({ summary: 'Get any order by ID (admin only)' })
+  @ApiParam({ name: 'id', type: String, format: 'uuid' })
+  @ApiResponse({ status: 200, description: 'Order with items and user' })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  findOneAdmin(@Param('id', ParseUUIDPipe) id: string) {
+    return this.ordersService.findOneAdmin(id);
+  }
 }
