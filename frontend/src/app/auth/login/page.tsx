@@ -1,17 +1,15 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuthStore } from "@/stores/auth-store";
 import { ApiError } from "@/lib/api";
 
 function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { login, isAuthenticated, isLoading } = useAuth();
-
-  const redirectTo = searchParams.get("redirect") || "/";
+  const { login, user, isAuthenticated, isLoading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,9 +19,9 @@ function LoginForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.push(redirectTo);
+      router.push(user?.role === "ADMIN" ? "/admin" : "/account");
     }
-  }, [isLoading, isAuthenticated, router, redirectTo]);
+  }, [isLoading, isAuthenticated, router, user]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -45,7 +43,8 @@ function LoginForm() {
     setIsSubmitting(true);
     try {
       await login(email, password);
-      router.push(redirectTo);
+      const loggedUser = useAuthStore.getState().user;
+      router.push(loggedUser?.role === "ADMIN" ? "/admin" : "/account");
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 401) setApiError("Invalid email or password");

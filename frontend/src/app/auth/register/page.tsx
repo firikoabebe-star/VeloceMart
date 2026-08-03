@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuthStore } from "@/stores/auth-store";
 import { ApiError } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, isAuthenticated, isLoading } = useAuth();
+  const { register, user, isAuthenticated, isLoading } = useAuth();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -21,9 +22,9 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.push("/");
+      router.push(user?.role === "ADMIN" ? "/admin" : "/account");
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router, user]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -51,7 +52,8 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     try {
       await register({ firstName, lastName, email, password });
-      router.push("/");
+      const registeredUser = useAuthStore.getState().user;
+      router.push(registeredUser?.role === "ADMIN" ? "/admin" : "/account");
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 409) setApiError("Email already registered");

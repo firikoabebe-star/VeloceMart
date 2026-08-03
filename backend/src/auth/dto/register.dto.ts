@@ -6,7 +6,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { Role } from '../../../generated/prisma/enums.js';
+import { Role } from '../../../generated/prisma';
 
 export class RegisterDto {
   @IsEmail()

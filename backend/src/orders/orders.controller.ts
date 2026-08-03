@@ -21,7 +21,7 @@ import {
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
-import { Role, OrderStatus } from '../../generated/prisma/enums.js';
+import { Role, OrderStatus } from '../../generated/prisma';
 import type { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface.js';
 import { OrdersService } from './orders.service.js';
 import { OrderFilterDto } from './dto/order.dto.js';
@@ -58,6 +58,13 @@ export class OrdersController {
   @ApiResponse({ status: 200, description: 'Paginated order list' })
   findAll(@Req() req: AuthenticatedRequest, @Query() filters: OrderFilterDto) {
     return this.ordersService.findAll(req.user.sub, filters);
+  }
+
+  @Get('me/stats')
+  @ApiOperation({ summary: 'Get current user order statistics' })
+  @ApiResponse({ status: 200, description: 'User order stats and chart data' })
+  getMyStats(@Req() req: AuthenticatedRequest) {
+    return this.ordersService.getMyStats(req.user.sub);
   }
 
   @Get(':id')

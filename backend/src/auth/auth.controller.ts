@@ -16,7 +16,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
-import { Role } from '../../generated/prisma/enums.js';
+import { Role } from '../../generated/prisma';
 import { Roles } from '../common/decorators/roles.decorator.js';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { JwtRefreshGuard } from '../common/guards/jwt-refresh.guard.js';

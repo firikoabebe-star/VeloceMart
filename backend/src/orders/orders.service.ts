@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '../../generated/prisma/client.js';
-import { OrderStatus } from '../../generated/prisma/enums.js';
+import { OrderStatus } from '../../generated/prisma';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 import type { PaginatedResponse } from '../common/dto/pagination.dto.js';
 import { OrderFilterDto } from './dto/order.dto.js';
@@ -351,6 +351,71 @@ export class OrdersService {
       totalOrders,
       pendingOrders,
       monthlyRevenue: Number(revenueResult._sum.totalAmount ?? 0),
+    };
+  }
+
+  async getMyStats(userId: string) {
+    const now = new Date();
+    const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+    const [totalOrders, activeOrders, pendingOrders, deliveredOrders, cancelledOrders, spentResult, statusCounts, monthlySpending] =
+      await Promise.all([
+        this.prisma.order.count({ where: { userId } }),
+        this.prisma.order.count({
+          where: { userId, status: { in: ['PENDING', 'CONFIRMED', 'SHIPPED'] } },
+        }),
+        this.prisma.order.count({ where: { userId, status: 'PENDING' } }),
+        this.prisma.order.count({ where: { userId, status: 'DELIVERED' } }),
+        this.prisma.order.count({ where: { userId, status: 'CANCELLED' } }),
+        this.prisma.order.aggregate({
+          _sum: { totalAmount: true },
+          where: { userId, status: { not: 'CANCELLED' } },
+        }),
+        this.prisma.order.groupBy({
+          by: ['status'],
+          where: { userId },
+          _count: true,
+        }),
+        this.prisma.$queryRaw<{ month: string; total: number }[]>`
+          SELECT
+            TO_CHAR(o.created_at, 'YYYY-MM') AS month,
+            COALESCE(SUM(o.total_amount), 0)::float AS total
+          FROM orders o
+          WHERE o.user_id = ${userId}
+            AND o.created_at >= ${twelveMonthsAgo}
+            AND o.status != 'CANCELLED'
+          GROUP BY TO_CHAR(o.created_at, 'YYYY-MM')
+          ORDER BY month ASC
+        `,
+      ]);
+
+    const totalSpent = Number(spentResult._sum.totalAmount ?? 0);
+
+    const orderStatusBreakdown: Record<string, number> = {
+      PENDING: 0,
+      CONFIRMED: 0,
+      SHIPPED: 0,
+      DELIVERED: 0,
+      CANCELLED: 0,
+    };
+    for (const item of statusCounts) {
+      orderStatusBreakdown[item.status] = item._count;
+    }
+
+    const spendingOverTime = monthlySpending.map((row) => ({
+      month: row.month,
+      total: Number(row.total),
+    }));
+
+    return {
+      totalOrders,
+      totalSpent,
+      activeOrders,
+      pendingOrders,
+      deliveredOrders,
+      cancelledOrders,
+      orderStatusBreakdown,
+      spendingOverTime,
     };
   }
 }

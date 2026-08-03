@@ -582,3 +582,219 @@ export async function updateUserRole(
     throw toApiError(err);
   }
 }
+
+/* ── Account API ────────────────────────────────────────── */
+
+export interface Address {
+  id: string;
+  userId: string;
+  label: string;
+  firstName: string;
+  lastName: string;
+  line1: string;
+  line2: string | null;
+  city: string;
+  state: string | null;
+  postalCode: string;
+  country: string;
+  phone: string | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WishlistItem {
+  id: string;
+  userId: string;
+  productId: string;
+  createdAt: string;
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    imageUrl: string | null;
+    category: { id: string; name: string; slug: string };
+    variants: { id: string; price: number; stock: number }[];
+  };
+}
+
+export interface UserOrderStats {
+  totalOrders: number;
+  totalSpent: number;
+  activeOrders: number;
+  pendingOrders: number;
+  deliveredOrders: number;
+  cancelledOrders: number;
+  orderStatusBreakdown: Record<string, number>;
+  spendingOverTime: { month: string; total: number }[];
+}
+
+export async function getMyOrders(
+  filters?: Record<string, string>,
+): Promise<PaginatedResponse<Order>> {
+  try {
+    const params = new URLSearchParams(filters ?? {});
+    if (!params.has("limit")) params.set("limit", "10");
+    const { data } = await api.get<PaginatedResponse<Order>>(
+      `/orders?${params}`,
+    );
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function getMyOrder(id: string): Promise<Order> {
+  try {
+    const { data } = await api.get<Order>(`/orders/${id}`);
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function getMyOrderStats(): Promise<UserOrderStats> {
+  try {
+    const { data } = await api.get<UserOrderStats>("/orders/me/stats");
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function getMyProfile(): Promise<User> {
+  try {
+    const { data } = await api.get<User>("/users/me");
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function updateMyProfile(profile: {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}): Promise<User> {
+  try {
+    const { data } = await api.patch<User>("/users/me", profile);
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<{ success: boolean }> {
+  try {
+    const { data } = await api.post<{ success: boolean }>(
+      "/users/me/password",
+      payload,
+    );
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function getWishlist(): Promise<WishlistItem[]> {
+  try {
+    const { data } = await api.get<WishlistItem[]>("/wishlist");
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function addToWishlist(
+  productId: string,
+): Promise<WishlistItem> {
+  try {
+    const { data } = await api.post<WishlistItem>("/wishlist", { productId });
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function removeFromWishlist(
+  productId: string,
+): Promise<{ success: boolean }> {
+  try {
+    const { data } = await api.delete<{ success: boolean }>(
+      `/wishlist/${productId}`,
+    );
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function checkWishlist(
+  productId: string,
+): Promise<{ inWishlist: boolean }> {
+  try {
+    const { data } = await api.get<{ inWishlist: boolean }>(
+      `/wishlist/check/${productId}`,
+    );
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function getAddresses(): Promise<Address[]> {
+  try {
+    const { data } = await api.get<Address[]>("/addresses");
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function createAddress(
+  address: Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">,
+): Promise<Address> {
+  try {
+    const { data } = await api.post<Address>("/addresses", address);
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function updateAddress(
+  id: string,
+  address: Partial<Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">>,
+): Promise<Address> {
+  try {
+    const { data } = await api.patch<Address>(`/addresses/${id}`, address);
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function deleteAddress(id: string): Promise<{ success: boolean }> {
+  try {
+    const { data } = await api.delete<{ success: boolean }>(
+      `/addresses/${id}`,
+    );
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function setDefaultAddress(
+  id: string,
+): Promise<Address> {
+  try {
+    const { data } = await api.patch<Address>(`/addresses/${id}/default`);
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}

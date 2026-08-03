@@ -14,6 +14,8 @@ import { OrdersModule } from './orders/orders.module.js';
 import { AiModule } from './ai/ai.module.js';
 import { UploadModule } from './upload/upload.module.js';
 import { UsersModule } from './users/users.module.js';
+import { WishlistModule } from './wishlist/wishlist.module.js';
+import { AddressesModule } from './addresses/addresses.module.js';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { UsersModule } from './users/users.module.js';
     AiModule,
     UploadModule,
     UsersModule,
+    WishlistModule,
+    AddressesModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '../../generated/prisma/client.js';
-import { Role } from '../../generated/prisma/enums.js';
+import { Role } from '../../generated/prisma';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 import type { PaginatedResponse } from '../common/dto/pagination.dto.js';
-import { UserFilterDto } from './dto/user.dto.js';
+import { UserFilterDto, UpdateProfileDto, ChangePasswordDto } from './dto/user.dto.js';
+import { compare, hash } from 'bcryptjs';
 
 const USER_SELECT = {
   id: true,
@@ -19,6 +25,61 @@ const USER_SELECT = {
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
+
+  async getMe(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: USER_SELECT,
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async updateMe(userId: string, dto: UpdateProfileDto) {
+    if (dto.email) {
+      const existing = await this.prisma.user.findUnique({
+        where: { email: dto.email },
+      });
+      if (existing && existing.id !== userId) {
+        throw new ConflictException('Email already in use');
+      }
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.firstName && { firstName: dto.firstName }),
+        ...(dto.lastName && { lastName: dto.lastName }),
+        ...(dto.email && { email: dto.email }),
+      },
+      select: USER_SELECT,
+    });
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, password: true },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const valid = await compare(dto.currentPassword, user.password);
+    if (!valid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const hashed = await hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashed },
+    });
+
+    return { success: true };
+  }
 
   async findAll(
     filters: UserFilterDto,

@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -24,8 +25,10 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  cart   Cart?
-  orders Order[]
+  cart      Cart?
+  orders    Order[]
+  wishlist  WishlistItem[]
+  addresses Address[]
 
   @@map("users")
 }
@@ -58,6 +61,7 @@ model Product {
   variants   ProductVariant[]
   cartItems  CartItem[]
   orderItems OrderItem[]
+  wishlistItems WishlistItem[]
 
   @@index([categoryId])
   @@index([slug])
@@ -160,4 +164,41 @@ enum OrderStatus {
   CANCELLED
 
   @@map("order_status")
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  productId String   @map("product_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("wishlist_items")
+}
+
+model Address {
+  id         String  @id @default(uuid())
+  userId     String  @map("user_id")
+  label      String  @default("Home")
+  firstName  String  @map("first_name")
+  lastName   String  @map("last_name")
+  line1      String
+  line2      String?
+  city       String
+  state      String?
+  postalCode String  @map("postal_code")
+  country    String  @default("US")
+  phone      String?
+  isDefault  Boolean @default(false) @map("is_default")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
 }
