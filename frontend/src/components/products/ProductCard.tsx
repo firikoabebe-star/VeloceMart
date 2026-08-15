@@ -50,7 +50,14 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* Sale badge example — show if variants have varied pricing */}
+        {/* Sale badge */}
+        {product.isOnSale && (
+          <span className="absolute left-3 top-3 rounded-md bg-accent-secondary px-2 py-0.5 text-[11px] font-semibold text-white">
+            Sale
+          </span>
+        )}
+
+        {/* Price range badge */}
         {range && range.min !== range.max && (
           <span className="absolute left-3 top-3 rounded-md bg-accent-secondary px-2 py-0.5 text-[11px] font-semibold text-white">
             Various prices

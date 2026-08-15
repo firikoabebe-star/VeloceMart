@@ -45,6 +45,12 @@ export class ProductsController {
   @ApiQuery({ name: 'size', required: false })
   @ApiQuery({ name: 'color', required: false })
   @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({
+    name: 'saleOnly',
+    required: false,
+    type: Boolean,
+    description: 'Only include products flagged as on sale',
+  })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({

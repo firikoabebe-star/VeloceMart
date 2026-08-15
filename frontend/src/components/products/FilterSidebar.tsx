@@ -27,10 +27,15 @@ const PRICE_PRESETS = [
 
 interface Props {
   categories: Category[];
+  basePath?: string;
   onClose?: () => void;
 }
 
-export default function FilterSidebar({ categories, onClose }: Props) {
+export default function FilterSidebar({
+  categories,
+  basePath = "/products",
+  onClose,
+}: Props) {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -50,9 +55,9 @@ export default function FilterSidebar({ categories, onClose }: Props) {
         sp.set(key, value);
       }
       sp.delete("page");
-      router.push(`/products?${sp.toString()}`, { scroll: false });
+      router.push(`${basePath}?${sp.toString()}`, { scroll: false });
     },
-    [router, params],
+    [router, params, basePath],
   );
 
   const toggleArrayParam = useCallback(
@@ -68,9 +73,9 @@ export default function FilterSidebar({ categories, onClose }: Props) {
         sp.append(key, value);
       }
       sp.delete("page");
-      router.push(`/products?${sp.toString()}`, { scroll: false });
+      router.push(`${basePath}?${sp.toString()}`, { scroll: false });
     },
-    [router, params],
+    [router, params, basePath],
   );
 
   const applyPriceRange = useCallback(
@@ -81,13 +86,13 @@ export default function FilterSidebar({ categories, onClose }: Props) {
       if (max !== undefined) sp.set("maxPrice", String(max));
       else sp.delete("maxPrice");
       sp.delete("page");
-      router.push(`/products?${sp.toString()}`, { scroll: false });
+      router.push(`${basePath}?${sp.toString()}`, { scroll: false });
     },
-    [router, params],
+    [router, params, basePath],
   );
 
   const clearAll = useCallback(() => {
-    router.push("/products", { scroll: false });
+    router.push(basePath, { scroll: false });
     setMinPriceInput("");
     setMaxPriceInput("");
   }, [router]);

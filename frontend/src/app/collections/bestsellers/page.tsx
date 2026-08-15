@@ -1,27 +1,15 @@
-import type { Metadata } from "next";
-import {
-  getProductListing,
-  type ProductFilters,
-} from "@/lib/api";
-import { ProductListing } from "@/components/products";
-
-export const metadata: Metadata = {
-  title: "Products — VeloceMart",
-  description:
-    "Browse our curated collection of premium fashion and accessories.",
-};
+import { getProductListing, type ProductFilters } from "@/lib/api";
+import ProductListing from "@/components/products/ProductListing";
 
 interface SearchParams {
   page?: string;
   limit?: string;
   sortBy?: string;
   sortOrder?: string;
-  categoryId?: string;
-  minPrice?: string;
-  maxPrice?: string;
   size?: string | string[];
   color?: string | string[];
-  search?: string;
+  minPrice?: string;
+  maxPrice?: string;
 }
 
 function toArray(v: string | string[] | undefined): string[] {
@@ -29,7 +17,12 @@ function toArray(v: string | string[] | undefined): string[] {
   return Array.isArray(v) ? v : [v];
 }
 
-export default async function ProductsPage({
+export const metadata = {
+  title: "Best Sellers — VeloceMart",
+  description: "Our most popular products, loved by customers.",
+};
+
+export default async function BestSellersPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -42,10 +35,8 @@ export default async function ProductsPage({
     sortBy: sp.sortBy ?? "createdAt",
     sortOrder: (sp.sortOrder as "asc" | "desc") ?? "desc",
   };
-  if (sp.categoryId) filters.categoryId = sp.categoryId;
   if (sp.minPrice) filters.minPrice = parseInt(sp.minPrice, 10);
   if (sp.maxPrice) filters.maxPrice = parseInt(sp.maxPrice, 10);
-  if (sp.search) filters.search = sp.search;
   const sizes = toArray(sp.size);
   const colors = toArray(sp.color);
   if (sizes.length > 0) filters.size = sizes[0];
@@ -53,10 +44,10 @@ export default async function ProductsPage({
 
   return (
     <ProductListing
-      title="Products"
-      description="Browse our curated collection of premium fashion and accessories."
+      title="Best Sellers"
+      description="Our most popular products, loved by customers."
       filters={filters}
-      basePath="/products"
+      basePath="/collections/bestsellers"
     />
   );
 }

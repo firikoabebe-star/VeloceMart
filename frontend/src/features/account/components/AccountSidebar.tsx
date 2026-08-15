@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import DashboardSidebar from "@/components/layout/DashboardSidebar";
 
 const NAV_ITEMS = [
   {
@@ -53,74 +51,21 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function AccountSidebar() {
-  const pathname = usePathname();
-  const { user, logout } = useAuth();
+interface AccountSidebarProps {
+  isDrawerOpen: boolean;
+  onCloseDrawer: () => void;
+}
 
-  const isActive = (href: string) =>
-    href === "/account" ? pathname === "/account" : pathname.startsWith(href);
-
+export default function AccountSidebar({
+  isDrawerOpen,
+  onCloseDrawer,
+}: AccountSidebarProps) {
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border/50 bg-surface">
-      <div className="flex h-16 shrink-0 items-center border-b border-border/30 px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary">
-            <span className="text-sm font-bold text-background">V</span>
-          </div>
-          <span className="text-lg font-bold text-text-primary">
-            Veloce<span className="text-accent-primary">Mart</span>
-          </span>
-        </Link>
-      </div>
-
-      <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              isActive(item.href)
-                ? "bg-accent-tertiary/10 text-accent-primary"
-                : "text-text-secondary hover:bg-surface-tertiary hover:text-text-primary"
-            }`}
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </Link>
-        ))}
-      </nav>
-
-      <div className="shrink-0 border-t border-border/30 bg-surface p-3">
-        <div className="group relative rounded-xl px-3 py-3 transition-colors hover:bg-surface-tertiary">
-          <div className="flex items-center gap-3">
-            {/* Avatar with gradient ring */}
-            <div className="relative shrink-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary text-sm font-bold text-white shadow-sm transition-transform duration-200 group-hover:scale-105">
-                {user?.firstName?.[0]?.toUpperCase()}
-              </div>
-              {/* Online status dot */}
-              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-success" />
-            </div>
-            {/* Name & Email */}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-text-primary">
-                {user?.firstName} {user?.lastName}
-              </p>
-              <p className="truncate text-xs text-text-muted">{user?.email}</p>
-            </div>
-            {/* Logout button */}
-            <button
-              onClick={logout}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-muted opacity-60 transition-all duration-200 hover:bg-error/10 hover:text-error hover:opacity-100 group-hover:opacity-100"
-              title="Sign out"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </aside>
+    <DashboardSidebar
+      navItems={NAV_ITEMS}
+      logoHref="/"
+      isDrawerOpen={isDrawerOpen}
+      onCloseDrawer={onCloseDrawer}
+    />
   );
 }

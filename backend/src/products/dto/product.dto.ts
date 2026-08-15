@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -36,6 +37,10 @@ export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   categoryId!: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isOnSale?: boolean;
 }
 
 export class UpdateProductDto {
@@ -66,6 +71,10 @@ export class UpdateProductDto {
   @IsString()
   @IsNotEmpty()
   categoryId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isOnSale?: boolean;
 }
 
 export class ProductFilterDto extends PaginationDto {
@@ -96,6 +105,11 @@ export class ProductFilterDto extends PaginationDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  saleOnly?: boolean;
 }
 
 export class SearchProductsDto extends PaginationDto {

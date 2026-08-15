@@ -29,6 +29,7 @@ export default function NewProductPage() {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [isOnSale, setIsOnSale] = useState(false);
 
   useEffect(() => {
     getAllCategories().then((res) => setCategories(res.data));
@@ -53,13 +54,14 @@ export default function NewProductPage() {
     setLoading(true);
     setError(null);
     try {
-      const product = await createProduct({
-        name,
-        slug,
-        description: description || null,
-        imageUrl: imageUrl || null,
-        categoryId,
-      });
+       const product = await createProduct({
+         name,
+         slug,
+         description: description || null,
+         imageUrl: imageUrl || null,
+         categoryId,
+         isOnSale,
+       });
       router.push(`/admin/products/${product.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create product");
@@ -114,6 +116,19 @@ export default function NewProductPage() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isOnSale"
+            checked={isOnSale}
+            onChange={(e) => setIsOnSale(e.target.checked)}
+            className="h-4 w-4 rounded border-border accent-accent-primary"
+          />
+          <label htmlFor="isOnSale" className="text-sm font-medium text-text-secondary">
+            On Sale
+          </label>
         </div>
 
         <div>

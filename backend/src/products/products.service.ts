@@ -37,6 +37,7 @@ export class ProductsService {
       size,
       color,
       search,
+      saleOnly,
     } = filters;
 
     const skip = (page - 1) * limit;
@@ -44,6 +45,7 @@ export class ProductsService {
     const where: Prisma.ProductWhereInput = {
       deletedAt: null,
       ...(categoryId && { categoryId }),
+      ...(saleOnly && { isOnSale: true }),
       ...(search && {
         name: { contains: search, mode: 'insensitive' },
       }),

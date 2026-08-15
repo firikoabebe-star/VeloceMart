@@ -38,6 +38,7 @@ export default function EditProductPage({
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [isOnSale, setIsOnSale] = useState(false);
 
   useEffect(() => {
     getAllCategories().then((res) => setCategories(res.data));
@@ -47,6 +48,7 @@ export default function EditProductPage({
       setDescription(p.description ?? "");
       setImageUrl(p.imageUrl ?? "");
       setCategoryId(p.categoryId);
+      setIsOnSale(p.isOnSale);
       setLoading(false);
     });
   }, [id]);
@@ -83,13 +85,14 @@ export default function EditProductPage({
     setSaving(true);
     setError(null);
     try {
-      await updateProduct(id, {
-        name,
-        slug,
-        description: description || null,
-        imageUrl: imageUrl || null,
-        categoryId,
-      });
+       await updateProduct(id, {
+         name,
+         slug,
+         description: description || null,
+         imageUrl: imageUrl || null,
+         categoryId,
+         isOnSale,
+       });
       router.push("/admin/products");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update product");
@@ -166,6 +169,19 @@ export default function EditProductPage({
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isOnSale"
+            checked={isOnSale}
+            onChange={(e) => setIsOnSale(e.target.checked)}
+            className="h-4 w-4 rounded border-border accent-accent-primary"
+          />
+          <label htmlFor="isOnSale" className="text-sm font-medium text-text-secondary">
+            On Sale
+          </label>
         </div>
 
         <div>

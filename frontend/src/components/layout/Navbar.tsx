@@ -57,9 +57,9 @@ const NAV_CATEGORIES: NavCategory[] = [
       {
         heading: "Collections",
         links: [
-          { label: "New Arrivals", href: "/collections/men/new" },
-          { label: "Best Sellers", href: "/collections/men/bestsellers" },
-          { label: "Sale", href: "/collections/men/sale" },
+          { label: "New Arrivals", href: "/collections/new" },
+          { label: "Best Sellers", href: "/collections/bestsellers" },
+          { label: "Sale", href: "/sale" },
         ],
       },
     ],
@@ -99,9 +99,9 @@ const NAV_CATEGORIES: NavCategory[] = [
       {
         heading: "Collections",
         links: [
-          { label: "New Arrivals", href: "/collections/women/new" },
-          { label: "Best Sellers", href: "/collections/women/bestsellers" },
-          { label: "Sale", href: "/collections/women/sale" },
+          { label: "New Arrivals", href: "/collections/new" },
+          { label: "Best Sellers", href: "/collections/bestsellers" },
+          { label: "Sale", href: "/sale" },
         ],
       },
     ],

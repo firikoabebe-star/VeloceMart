@@ -397,12 +397,31 @@ function UserMenu() {
 /* ── DashboardHeader ──────────────────────────────────────── */
 interface DashboardHeaderProps {
   title: string;
+  onOpenDrawer?: () => void;
 }
 
-export default function DashboardHeader({ title }: DashboardHeaderProps) {
+export default function DashboardHeader({
+  title,
+  onOpenDrawer,
+}: DashboardHeaderProps) {
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border/30 bg-surface px-6">
-      <h1 className="text-xl font-semibold text-text-primary">{title}</h1>
+    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border/30 bg-surface px-4 sm:px-6">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        {onOpenDrawer && (
+          <button
+            onClick={onOpenDrawer}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-text-primary lg:hidden"
+            aria-label="Open navigation menu"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        )}
+        <h1 className="truncate text-lg font-semibold text-text-primary sm:text-xl">
+          {title}
+        </h1>
+      </div>
       <div className="flex items-center gap-1">
         <HelpButton />
         <NotificationBell />

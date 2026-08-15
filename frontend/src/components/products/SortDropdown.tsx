@@ -11,7 +11,11 @@ const SORT_OPTIONS = [
   { label: "Category", value: "category:asc" },
 ] as const;
 
-export default function SortDropdown() {
+interface Props {
+  basePath?: string;
+}
+
+export default function SortDropdown({ basePath = "/products" }: Props) {
   const router = useRouter();
   const params = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -30,10 +34,10 @@ export default function SortDropdown() {
       sp.set("sortBy", by);
       sp.set("sortOrder", order);
       sp.delete("page");
-      router.push(`/products?${sp.toString()}`, { scroll: false });
-      setOpen(false);
-    },
-    [router, params],
+       router.push(`${basePath}?${sp.toString()}`, { scroll: false });
+       setOpen(false);
+     },
+     [router, params, basePath],
   );
 
   useEffect(() => {

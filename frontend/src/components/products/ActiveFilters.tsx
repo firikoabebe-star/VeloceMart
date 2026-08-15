@@ -18,7 +18,11 @@ function prettyValue(key: string, value: string): string {
   return value;
 }
 
-export default function ActiveFilters() {
+interface Props {
+  basePath?: string;
+}
+
+export default function ActiveFilters({ basePath = "/products" }: Props) {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -33,9 +37,9 @@ export default function ActiveFilters() {
         sp.delete(key);
       }
       sp.delete("page");
-      router.push(`/products?${sp.toString()}`, { scroll: false });
+       router.push(`${basePath}?${sp.toString()}`, { scroll: false });
     },
-    [router, params],
+    [router, params, basePath],
   );
 
   const pills: { key: string; value: string; label: string }[] = [];

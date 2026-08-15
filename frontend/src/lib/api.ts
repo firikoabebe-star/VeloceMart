@@ -45,6 +45,7 @@ export interface Product {
   description: string | null;
   imageUrl: string | null;
   categoryId: string;
+  isOnSale: boolean;
   createdAt: string;
   category: { id: string; name: string; slug: string };
   variants: ProductVariant[];
@@ -105,6 +106,7 @@ export interface ProductFilters {
   size?: string;
   color?: string;
   search?: string;
+  saleOnly?: boolean;
 }
 
 /* ── Catalog API ──────────────────────────────────────────── */
@@ -158,6 +160,7 @@ export async function getProductListing(
     if (filters.size) params.set("size", filters.size);
     if (filters.color) params.set("color", filters.color);
     if (filters.search) params.set("search", filters.search);
+    if (filters.saleOnly) params.set("saleOnly", "true");
     const { data } = await api.get<PaginatedResponse<Product>>(
       `/products?${params}`,
     );
@@ -172,6 +175,18 @@ export async function getProductBySlug(slug: string): Promise<Product> {
     const { data } = await api.get<Product>(`/products/slug/${slug}`);
     return data;
   } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function getCategoryBySlug(
+  slug: string,
+): Promise<Category | null> {
+  try {
+    const { data } = await api.get<Category>(`/categories/slug/${slug}`);
+    return data;
+  } catch (err) {
+    if (isAxiosError(err) && err.response?.status === 404) return null;
     throw toApiError(err);
   }
 }
@@ -287,8 +302,39 @@ export async function uploadImage(file: File): Promise<UploadResponse> {
   }
 }
 
+export interface CreateProductDto {
+  name: string;
+  slug: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  categoryId: string;
+  isOnSale?: boolean;
+  variants?: {
+    size?: string | null;
+    color?: string | null;
+    price: number;
+    stock?: number;
+  }[];
+}
+
+export interface UpdateProductDto {
+  name?: string;
+  slug?: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  categoryId?: string;
+  isOnSale?: boolean;
+  variants?: {
+    id?: string;
+    size?: string | null;
+    color?: string | null;
+    price?: number;
+    stock?: number;
+  }[];
+}
+
 export async function createProduct(
-  data: Omit<Product, "id" | "createdAt" | "category" | "variants" | "_count">,
+  data: CreateProductDto,
 ): Promise<Product> {
   try {
     const { data: res } = await api.post<Product>("/products", data);
@@ -300,13 +346,7 @@ export async function createProduct(
 
 export async function updateProduct(
   id: string,
-  data: Partial<{
-    name: string;
-    slug: string;
-    description: string | null;
-    imageUrl: string | null;
-    categoryId: string;
-  }>,
+  data: UpdateProductDto,
 ): Promise<Product> {
   try {
     const { data: res } = await api.patch<Product>(`/products/${id}`, data);

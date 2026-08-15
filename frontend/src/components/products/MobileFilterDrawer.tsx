@@ -6,9 +6,13 @@ import FilterSidebar from "./FilterSidebar";
 
 interface Props {
   categories: Category[];
+  basePath?: string;
 }
 
-export default function MobileFilterDrawer({ categories }: Props) {
+export default function MobileFilterDrawer({
+  categories,
+  basePath = "/products",
+}: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -58,7 +62,7 @@ export default function MobileFilterDrawer({ categories }: Props) {
                 </svg>
               </button>
             </div>
-            <FilterSidebar categories={categories} onClose={() => setOpen(false)} />
+            <FilterSidebar categories={categories} basePath={basePath} onClose={() => setOpen(false)} />
           </div>
         </>
       )}

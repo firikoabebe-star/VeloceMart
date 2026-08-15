@@ -5,9 +5,13 @@ import { useCallback, useMemo } from "react";
 
 interface Props {
   totalPages: number;
+  basePath?: string;
 }
 
-export default function Pagination({ totalPages }: Props) {
+export default function Pagination({
+  totalPages,
+  basePath = "/products",
+}: Props) {
   const router = useRouter();
   const params = useSearchParams();
   const currentPage = Math.max(1, parseInt(params.get("page") ?? "1", 10));
@@ -20,10 +24,10 @@ export default function Pagination({ totalPages }: Props) {
       } else {
         sp.set("page", String(page));
       }
-      router.push(`/products?${sp.toString()}`, { scroll: false });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-    [router, params],
+       router.push(`${basePath}?${sp.toString()}`, { scroll: false });
+       window.scrollTo({ top: 0, behavior: "smooth" });
+     },
+     [router, params, basePath],
   );
 
   const pages = useMemo(() => {
