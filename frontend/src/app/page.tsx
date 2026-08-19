@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import HeroSection from "@/components/home/HeroSection";
+import TrustStrip from "@/components/home/TrustStrip";
 import CategoryHighlights from "@/components/home/CategoryHighlights";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import PromotionalBanner from "@/components/home/PromotionalBanner";
@@ -39,6 +40,9 @@ export default function Home() {
 
       {/* Hero Section */}
       <HeroSection />
+
+      {/* Trust strip — relocated from the hero */}
+      <TrustStrip />
 
       {/* Banner 1 — Between Hero and Categories */}
       <PromotionalBanner
