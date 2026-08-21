@@ -105,7 +105,7 @@ export default function ProductActions({ product }: { product: Product }) {
     <div className="flex flex-col gap-6">
       {/* Price */}
       <div>
-        <p className="text-2xl font-bold text-accent-strong">
+        <p className="text-2xl font-bold text-text-primary">
           {formatPrice(displayPrice)}
           {priceHasRange && (
             <span className="ml-1 text-sm font-normal text-text-muted">

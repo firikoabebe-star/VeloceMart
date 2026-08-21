@@ -186,7 +186,7 @@ export default function RecommendationSection({
 
                 {/* Price */}
                 {min !== null && (
-                  <p className="mt-auto text-sm font-bold text-accent-strong">
+                  <p className="mt-auto text-sm font-bold text-text-primary">
                     {min === max
                       ? formatPrice(min)
                       : `${formatPrice(min)} – ${formatPrice(max!)}`}

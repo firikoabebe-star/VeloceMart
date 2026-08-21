@@ -11,11 +11,13 @@
   --text-secondary: #5A6270;
   --text-muted: #8A919C;
   --accent-primary: #FFA586;
-  --accent-secondary: #B51A26;
-  --accent-tertiary: #541925;
+  --accent-secondary: #C0524A;
+  --accent-tertiary: #6B3540;
   /* Accent for text/icons sitting on page/surface backgrounds:
-     deep red in light mode (6.7:1), vivid peach in dark mode (9:1). */
-  --accent-strong: #B51A26;
+     muted brick in light mode (5.0:1 on background, 5.5:1 on surface),
+     vivid peach in dark mode (9:1). Slightly deeper than
+     --accent-secondary so small text still clears WCAG AA (4.5:1). */
+  --accent-strong: #B04840;
   /* Ink for content placed ON accent-primary fills (9:1 on #FFA586). */
   --on-accent: #161B24;
   --success: #2ECC71;
@@ -38,8 +40,8 @@
   --text-secondary: #9BA8B8;
   --text-muted: #6B7B8E;
   --accent-primary: #FFA586;
-  --accent-secondary: #B51A26;
-  --accent-tertiary: #541925;
+  --accent-secondary: #C0524A;
+  --accent-tertiary: #6B3540;
   /* Accent for text/icons sitting on page/surface backgrounds:
      vivid peach in dark mode (9:1 on #161B24). */
   --accent-strong: #FFA586;

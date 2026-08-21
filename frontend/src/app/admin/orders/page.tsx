@@ -13,7 +13,7 @@ import {
 const STATUS_COLORS: Record<OrderStatus, string> = {
   PENDING: "bg-warning/10 text-warning",
   CONFIRMED: "bg-accent-primary text-on-accent",
-  SHIPPED: "bg-accent-secondary text-accent-secondary",
+  SHIPPED: "bg-accent-secondary text-white",
   DELIVERED: "bg-success/10 text-success",
   CANCELLED: "bg-error/10 text-error",
 };

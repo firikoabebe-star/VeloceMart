@@ -76,7 +76,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         {/* Price */}
         {range && (
-          <p className="mt-1 text-sm font-bold text-accent-strong">
+          <p className="mt-1 text-sm font-bold text-text-primary">
             {range.min === range.max
               ? formatPrice(range.min)
               : `${formatPrice(range.min)} – ${formatPrice(range.max)}`}

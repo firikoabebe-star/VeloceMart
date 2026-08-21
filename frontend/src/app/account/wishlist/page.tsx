@@ -185,7 +185,7 @@ export default function WishlistPage() {
                     {item.product.name}
                   </Link>
                   {variant && (
-                    <p className="mt-2 text-lg font-bold text-accent-strong tabular-nums">
+                    <p className="mt-2 text-lg font-bold text-text-primary tabular-nums">
                       ${(variant.price / 100).toFixed(2)}
                     </p>
                   )}

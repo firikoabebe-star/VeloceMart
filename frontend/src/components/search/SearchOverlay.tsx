@@ -97,7 +97,7 @@ function SearchResultRow({
         <span className="mt-0.5 text-xs text-text-muted">
           {product.category.name}
         </span>
-        <span className="mt-1 text-sm font-semibold text-accent-strong">
+        <span className="mt-1 text-sm font-semibold text-text-primary">
           {getPriceRange(product.variants)}
         </span>
       </div>

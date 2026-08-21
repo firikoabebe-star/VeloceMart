@@ -137,7 +137,7 @@ export default function ProductCard({
         <h3 className="text-sm font-semibold leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-strong">
           {product.name}
         </h3>
-        <p className="mt-auto text-sm font-bold text-accent-strong">
+        <p className="mt-auto text-sm font-bold text-text-primary">
           {getPriceRange(product)}
         </p>
 
