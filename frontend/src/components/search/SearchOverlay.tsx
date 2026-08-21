@@ -16,10 +16,10 @@ function getPriceRange(variants: Product["variants"]): string {
 
 function getGradient(index: number): string {
   const palettes = [
-    "from-accent-primary/20 to-accent-primary/5",
-    "from-accent-secondary/20 to-accent-secondary/5",
-    "from-accent-tertiary/20 to-accent-tertiary/5",
-    "from-surface-secondary/60 to-surface-secondary/20",
+    "from-accent-tertiary via-accent-secondary to-accent-tertiary",
+    "from-accent-secondary via-accent-tertiary to-accent-secondary",
+    "from-accent-tertiary via-accent-primary to-accent-secondary",
+    "from-surface-tertiary via-surface-tertiary to-surface-tertiary",
   ];
   return palettes[index % palettes.length];
 }
@@ -60,7 +60,7 @@ function SearchResultRow({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.25, ease: "easeOut" }}
-      className="group flex items-center gap-4 rounded-lg p-3 transition-colors hover:bg-surface-secondary/60"
+      className="group flex items-center gap-4 rounded-lg p-3 transition-colors hover:bg-surface-tertiary/60"
     >
       {/* Thumbnail */}
       <div
@@ -74,7 +74,7 @@ function SearchResultRow({
           />
         ) : (
           <svg
-            className="h-6 w-6 text-text-muted/40"
+            className="h-6 w-6 text-accent-primary"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -91,20 +91,20 @@ function SearchResultRow({
 
       {/* Info */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-sm font-medium text-text-primary transition-colors group-hover:text-accent-primary">
+        <span className="truncate text-sm font-medium text-text-primary transition-colors group-hover:text-accent-strong">
           {highlightMatch(product.name, query)}
         </span>
         <span className="mt-0.5 text-xs text-text-muted">
           {product.category.name}
         </span>
-        <span className="mt-1 text-sm font-semibold text-accent-primary">
+        <span className="mt-1 text-sm font-semibold text-accent-strong">
           {getPriceRange(product.variants)}
         </span>
       </div>
 
       {/* Arrow hint */}
       <svg
-        className="h-4 w-4 shrink-0 text-text-muted/40 transition-all group-hover:translate-x-0.5 group-hover:text-accent-primary"
+        className="h-4 w-4 shrink-0 text-text-muted/40 transition-all group-hover:translate-x-0.5 group-hover:text-accent-strong"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -135,7 +135,7 @@ function highlightMatch(text: string, query: string): React.ReactNode {
         i % 2 === 1 ? (
           <mark
             key={i}
-            className="rounded-sm bg-accent-primary/20 text-accent-primary"
+            className="rounded-sm bg-accent-primary text-on-accent"
           >
             {part}
           </mark>
@@ -336,7 +336,7 @@ export default function SearchOverlay({
               {/* Loading spinner */}
               {loading && (
                 <svg
-                  className="h-4 w-4 animate-spin text-accent-primary"
+                  className="h-4 w-4 animate-spin text-accent-strong"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -403,7 +403,7 @@ export default function SearchOverlay({
                           setQuery(s.query);
                           inputRef.current?.focus();
                         }}
-                        className="rounded-full border border-border/40 px-3 py-1.5 text-xs font-medium text-text-secondary transition-all hover:border-accent-primary/40 hover:bg-accent-primary/10 hover:text-accent-primary"
+                        className="rounded-full border border-border/40 px-3 py-1.5 text-xs font-medium text-text-secondary transition-all hover:border-accent-primary/70 hover:bg-accent-primary/25 hover:text-accent-strong"
                       >
                         {s.label}
                       </button>
@@ -489,7 +489,7 @@ export default function SearchOverlay({
                 <a
                   href={`/products?search=${encodeURIComponent(query)}`}
                   onClick={onClose}
-                  className="group flex items-center justify-center gap-2 rounded-lg bg-accent-primary/10 px-4 py-2.5 text-sm font-semibold text-accent-primary transition-all hover:bg-accent-primary/20"
+                  className="group flex items-center justify-center gap-2 rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-semibold text-on-accent transition-all hover:shadow-glow-accent"
                 >
                   View all results
                   <svg

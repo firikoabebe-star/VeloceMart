@@ -86,7 +86,7 @@ export default function RegisterPage() {
           Already have an account?{" "}
           <Link
             href="/auth/login"
-            className="font-medium text-accent-primary hover:underline"
+            className="font-medium text-accent-strong hover:underline"
           >
             Sign in
           </Link>
@@ -215,7 +215,7 @@ export default function RegisterPage() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50"
+        className="w-full rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-semibold text-on-accent transition-colors hover:opacity-90 disabled:opacity-50"
       >
         {isSubmitting ? "Creating account..." : "Create account"}
       </button>

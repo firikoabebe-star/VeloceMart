@@ -12,12 +12,12 @@ function formatPrice(cents: number): string {
 
 /* ── Visual placeholder gradients ────────────────────────── */
 const placeholderGradients = [
-  "from-accent-primary/20 via-accent-secondary/10 to-accent-tertiary/20",
-  "from-accent-secondary/20 via-accent-tertiary/15 to-accent-primary/15",
-  "from-accent-tertiary/15 via-accent-primary/20 to-accent-secondary/10",
-  "from-accent-primary/15 via-accent-tertiary/10 to-accent-primary/20",
-  "from-accent-secondary/15 via-accent-primary/20 to-accent-tertiary/15",
-  "from-accent-tertiary/20 via-accent-secondary/10 to-accent-primary/15",
+  "from-accent-primary/70 via-accent-secondary/45 to-accent-tertiary/70",
+  "from-accent-secondary/70 via-accent-tertiary/60 to-accent-primary/60",
+  "from-accent-tertiary/60 via-accent-primary/70 to-accent-secondary/45",
+  "from-accent-primary/60 via-accent-tertiary/45 to-accent-primary/70",
+  "from-accent-secondary/60 via-accent-primary/70 to-accent-tertiary/60",
+  "from-accent-tertiary/70 via-accent-secondary/45 to-accent-primary/60",
 ];
 
 /* ── Badge helper ────────────────────────────────────────── */
@@ -103,7 +103,7 @@ export default function RecommendationSection({
                 ease: [0.25, 0.1, 0.25, 1],
               }}
               whileHover={{ y: -6 }}
-              className="group relative flex flex-col overflow-hidden rounded-xl border border-border/20 bg-surface transition-all duration-300 hover:border-accent-primary/25 hover:shadow-elevation-2"
+              className="group relative flex flex-col overflow-hidden rounded-xl border border-border/20 bg-surface transition-all duration-300 hover:border-accent-primary/50 hover:shadow-elevation-2"
             >
               {/* Image container */}
               <div className="relative aspect-[4/3] overflow-hidden bg-surface-tertiary">
@@ -121,7 +121,7 @@ export default function RecommendationSection({
                     }`}
                   >
                     <svg
-                      className="h-12 w-12 text-accent-primary/40"
+                      className="h-12 w-12 text-accent-strong/40"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -141,7 +141,7 @@ export default function RecommendationSection({
                   <span
                     className={`absolute left-3 top-3 z-10 inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${
                       badge.variant === "new"
-                        ? "bg-accent-primary text-background"
+                        ? "bg-accent-primary text-on-accent"
                         : "bg-accent-secondary text-white"
                     }`}
                   >
@@ -152,7 +152,7 @@ export default function RecommendationSection({
                 {/* Quick-add overlay */}
                 {min !== null && (
                   <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-background/80 via-background/40 to-transparent p-4 pt-12 transition-transform duration-300 group-hover:translate-y-0">
-                    <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-4 py-2.5 text-xs font-semibold text-background transition-all duration-200 hover:bg-accent-primary/90">
+                    <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-4 py-2.5 text-xs font-semibold text-on-accent transition-all duration-200 hover:bg-accent-primary/90">
                       <svg
                         className="h-4 w-4"
                         fill="none"
@@ -180,13 +180,13 @@ export default function RecommendationSection({
                 <span className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
                   {product.category.name}
                 </span>
-                <h3 className="text-sm font-semibold leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-primary">
+                <h3 className="text-sm font-semibold leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-strong">
                   {product.name}
                 </h3>
 
                 {/* Price */}
                 {min !== null && (
-                  <p className="mt-auto text-sm font-bold text-accent-primary">
+                  <p className="mt-auto text-sm font-bold text-accent-strong">
                     {min === max
                       ? formatPrice(min)
                       : `${formatPrice(min)} – ${formatPrice(max!)}`}

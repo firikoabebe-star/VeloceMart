@@ -10,7 +10,7 @@ import { getMyOrder, type Order, type OrderStatus } from "@/lib/api";
 
 const STATUS_BADGE: Record<string, string> = {
   PENDING: "bg-warning/10 text-warning border-warning/20",
-  CONFIRMED: "bg-accent-primary/10 text-accent-primary border-accent-primary/20",
+  CONFIRMED: "bg-accent-primary text-on-accent border-accent-primary/50",
   SHIPPED: "bg-blue-500/10 text-blue-500 border-blue-500/20",
   DELIVERED: "bg-success/10 text-success border-success/20",
   CANCELLED: "bg-error/10 text-error border-error/20",
@@ -85,7 +85,7 @@ export default function OrderDetailPage() {
       <div className="animate-fade-in space-y-6">
         <Link
           href="/account/orders"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-accent-primary transition-colors hover:text-accent-primary/80"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-accent-strong transition-colors hover:text-accent-strong/80"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -134,7 +134,7 @@ export default function OrderDetailPage() {
       <div className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border/50 bg-surface p-6 sm:p-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-text-primary">
-            Order <span className="text-accent-primary">#{order.id.slice(0, 8)}</span>
+            Order <span className="text-accent-strong">#{order.id.slice(0, 8)}</span>
           </h1>
           <div className="mt-1.5 flex items-center gap-2 text-sm text-text-muted">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -168,7 +168,7 @@ export default function OrderDetailPage() {
                     <div
                       className={`relative flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-500 ${
                         isCurrent
-                          ? "bg-accent-primary text-white shadow-lg shadow-accent-primary/30"
+                          ? "bg-accent-primary text-on-accent shadow-lg shadow-accent-primary/30"
                           : isCompleted
                             ? "bg-success text-white shadow-sm"
                             : "bg-surface-tertiary text-text-muted"
@@ -186,7 +186,7 @@ export default function OrderDetailPage() {
                     <span
                       className={`mt-2.5 text-center text-[11px] font-semibold uppercase tracking-wider ${
                         isCurrent
-                          ? "text-accent-primary"
+                          ? "text-accent-strong"
                           : isCompleted
                             ? "text-success"
                             : "text-text-muted"

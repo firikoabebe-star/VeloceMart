@@ -46,7 +46,7 @@ function inputClass(hasError?: boolean) {
   return `mt-1 block w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-all duration-200 ${
     hasError
       ? "border-error/60 ring-2 ring-error/10 focus:border-error"
-      : "border-border focus:border-accent-primary focus:ring-3 focus:ring-accent-primary/10"
+      : "border-border focus:border-accent-primary focus:ring-3 focus:ring-accent-primary/50"
   } bg-surface text-text-primary placeholder:text-text-muted`;
 }
 
@@ -194,7 +194,7 @@ export default function AddressesPage() {
         </div>
         <button
           onClick={openAdd}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent active:scale-[0.98]"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent active:scale-[0.98]"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -262,7 +262,7 @@ export default function AddressesPage() {
           </p>
           <button
             onClick={openAdd}
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -276,13 +276,13 @@ export default function AddressesPage() {
           {addresses.map((addr, idx) => (
             <div
               key={addr.id}
-              className="group relative rounded-xl border border-border/50 bg-surface p-6 transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/20"
+              className="group relative rounded-xl border border-border/50 bg-surface p-6 transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/50"
               style={{ animationDelay: `${idx * 60}ms` }}
             >
               {/* Header */}
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-tertiary/5 text-accent-primary transition-transform duration-200 group-hover:scale-110">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-tertiary text-accent-primary transition-transform duration-200 group-hover:scale-110">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
@@ -369,7 +369,7 @@ export default function AddressesPage() {
           <div className="mx-4 mb-8 w-full max-w-lg animate-slide-up rounded-xl border border-border/50 bg-surface p-6 shadow-elevation-3">
             {/* Modal header */}
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary/10 text-accent-primary">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary text-on-accent">
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
@@ -560,7 +560,7 @@ export default function AddressesPage() {
                   type="checkbox"
                   checked={form.isDefault}
                   onChange={(e) => setField("isDefault", e.target.checked)}
-                  className="h-4 w-4 rounded border-border text-accent-primary focus:ring-accent-primary/30"
+                  className="h-4 w-4 rounded border-border text-accent-strong focus:ring-accent-primary/50"
                 />
                 <div>
                   <span className="text-sm font-medium text-text-primary">
@@ -584,7 +584,7 @@ export default function AddressesPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
                 >
                   {saving ? (
                     <>
@@ -640,7 +640,7 @@ export default function AddressesPage() {
               </button>
               <button
                 onClick={handleDelete}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-error px-4 py-2 text-sm font-medium text-background transition-all duration-200 hover:bg-error/90 active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-error px-4 py-2 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-error/90 active:scale-[0.98]"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />

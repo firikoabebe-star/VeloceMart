@@ -90,7 +90,7 @@ export default function SortDropdown({ basePath = "/products" }: Props) {
               onClick={() => setSort(option.value)}
               className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors ${
                 currentValue === option.value
-                  ? "bg-accent-primary/10 font-medium text-accent-primary"
+                  ? "bg-accent-primary font-medium text-on-accent"
                   : "text-text-secondary hover:bg-surface-tertiary hover:text-text-primary"
               }`}
             >

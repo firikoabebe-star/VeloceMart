@@ -81,7 +81,7 @@ export default function RecentlyViewed({
           <Link
             key={item.id}
             href={`/products/${item.slug}`}
-            className="group flex flex-col overflow-hidden rounded-lg border border-border bg-surface transition-all hover:shadow-elevation-1 hover:border-accent-primary/30"
+            className="group flex flex-col overflow-hidden rounded-lg border border-border bg-surface transition-all hover:shadow-elevation-1 hover:border-accent-primary/60"
           >
             {/* Image placeholder */}
             <div className="aspect-square overflow-hidden bg-surface-tertiary">
@@ -111,7 +111,7 @@ export default function RecentlyViewed({
             </div>
             <div className="p-2.5">
               <p className="text-[11px] text-text-muted">{item.categoryName}</p>
-              <p className="mt-0.5 text-xs font-medium text-text-primary line-clamp-2 group-hover:text-accent-primary transition-colors">
+              <p className="mt-0.5 text-xs font-medium text-text-primary line-clamp-2 group-hover:text-accent-strong transition-colors">
                 {item.name}
               </p>
             </div>

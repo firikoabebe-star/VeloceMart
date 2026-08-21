@@ -93,7 +93,7 @@ function toApiError(err: unknown): ApiError {
   return new ApiError(500, "An unexpected error occurred");
 }
 
-/* ── Product filters type ─────────────────────────────────── */
+/* -- Product filters type ----------------------------------------------- */
 
 export interface ProductFilters {
   page?: number;

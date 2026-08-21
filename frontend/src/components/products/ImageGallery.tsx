@@ -6,10 +6,10 @@ import type { Product } from "@/lib/api";
 
 /* ── Placeholder gradients for additional gallery views ──── */
 const placeholderGradients = [
-  "from-accent-primary/20 via-accent-secondary/10 to-accent-tertiary/20",
-  "from-accent-secondary/20 via-accent-tertiary/15 to-accent-primary/15",
-  "from-accent-tertiary/15 via-accent-primary/20 to-accent-secondary/10",
-  "from-accent-primary/15 via-accent-tertiary/10 to-accent-primary/20",
+  "from-accent-primary/70 via-accent-secondary/45 to-accent-tertiary/70",
+  "from-accent-secondary/70 via-accent-tertiary/60 to-accent-primary/60",
+  "from-accent-tertiary/60 via-accent-primary/70 to-accent-secondary/45",
+  "from-accent-primary/60 via-accent-tertiary/45 to-accent-primary/70",
 ];
 
 /* ── Gallery image type ──────────────────────────────────── */
@@ -159,7 +159,7 @@ export default function ImageGallery({ product }: { product: Product }) {
               >
                 <div className="text-center">
                   <svg
-                    className="mx-auto h-16 w-16 text-accent-primary/40"
+                    className="mx-auto h-16 w-16 text-accent-strong/40"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -171,7 +171,7 @@ export default function ImageGallery({ product }: { product: Product }) {
                       d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"
                     />
                   </svg>
-                  <p className="mt-2 text-xs font-medium uppercase tracking-wider text-accent-primary/30">
+                  <p className="mt-2 text-xs font-medium uppercase tracking-wider text-accent-strong/30">
                     {active.label}
                   </p>
                 </div>
@@ -237,7 +237,7 @@ export default function ImageGallery({ product }: { product: Product }) {
                       style={{ backgroundColor: img.label }}
                     />
                   ) : (
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-accent-primary/40">
+                    <span className="text-[8px] font-bold uppercase tracking-wider text-accent-strong/40">
                       {i + 1}
                     </span>
                   )}

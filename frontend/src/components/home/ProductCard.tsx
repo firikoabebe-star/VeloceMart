@@ -16,10 +16,10 @@ function getPriceRange(product: Product): string {
 
 /* ── Visual placeholder by name ───────────────────────────── */
 const placeholderGradients = [
-  "from-accent-primary/20 via-accent-secondary/10 to-accent-tertiary/20",
-  "from-accent-secondary/20 via-accent-tertiary/15 to-accent-primary/10",
-  "from-accent-tertiary/15 via-accent-primary/20 to-accent-secondary/10",
-  "from-accent-primary/15 via-accent-tertiary/10 to-accent-primary/20",
+  "from-accent-tertiary via-accent-secondary to-accent-tertiary",
+  "from-accent-secondary via-accent-tertiary to-accent-secondary",
+  "from-accent-tertiary via-accent-primary to-accent-secondary",
+  "from-accent-secondary via-accent-tertiary to-accent-primary",
 ];
 
 function ProductImage({ product, index }: { product: Product; index: number }) {
@@ -43,7 +43,7 @@ function ProductImage({ product, index }: { product: Product; index: number }) {
     >
       <div className="text-center">
         <svg
-          className="mx-auto h-10 w-10 text-accent-primary/40"
+          className="mx-auto h-10 w-10 text-accent-primary"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -55,7 +55,7 @@ function ProductImage({ product, index }: { product: Product; index: number }) {
             d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"
           />
         </svg>
-        <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-accent-primary/30">
+        <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-accent-primary/90">
           {product.category.name}
         </p>
       </div>
@@ -99,7 +99,7 @@ export default function ProductCard({
         ease: [0.25, 0.1, 0.25, 1],
       }}
       whileHover={{ y: -6 }}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border/20 bg-surface transition-all duration-300 hover:border-accent-primary/25 hover:shadow-elevation-2"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-border/20 bg-surface transition-all duration-300 hover:border-accent-primary/50 hover:shadow-elevation-2"
     >
       {/* Image container */}
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -110,7 +110,7 @@ export default function ProductCard({
           <span
             className={`absolute left-3 top-3 z-10 inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${
               badge.variant === "new"
-                ? "bg-accent-primary text-background"
+                ? "bg-accent-primary text-on-accent"
                 : "bg-accent-secondary text-white"
             }`}
           >
@@ -120,7 +120,7 @@ export default function ProductCard({
 
         {/* Quick add overlay */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-background/80 via-background/40 to-transparent p-4 pt-12 transition-transform duration-300 group-hover:translate-y-0">
-          <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-4 py-2.5 text-xs font-semibold text-background transition-all duration-200 hover:bg-accent-primary/90">
+          <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-4 py-2.5 text-xs font-semibold text-on-accent transition-all duration-200 hover:bg-accent-primary/90">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
@@ -134,10 +134,10 @@ export default function ProductCard({
         <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
           {product.category.name}
         </p>
-        <h3 className="text-sm font-semibold leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-primary">
+        <h3 className="text-sm font-semibold leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-strong">
           {product.name}
         </h3>
-        <p className="mt-auto text-sm font-bold text-accent-primary">
+        <p className="mt-auto text-sm font-bold text-accent-strong">
           {getPriceRange(product)}
         </p>
 

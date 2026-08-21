@@ -12,8 +12,8 @@ import {
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
   PENDING: "bg-warning/10 text-warning",
-  CONFIRMED: "bg-accent-primary/10 text-accent-primary",
-  SHIPPED: "bg-accent-secondary/10 text-accent-secondary",
+  CONFIRMED: "bg-accent-primary text-on-accent",
+  SHIPPED: "bg-accent-secondary text-accent-secondary",
   DELIVERED: "bg-success/10 text-success",
   CANCELLED: "bg-error/10 text-error",
 };
@@ -92,7 +92,7 @@ export default function OrderListPage() {
             href={buildHref({ status: opt.value, page: "1" })}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
               status === opt.value || (!status && !opt.value)
-                ? "bg-accent-primary text-background"
+                ? "bg-accent-primary text-on-accent"
                 : "bg-surface-tertiary text-text-secondary hover:text-text-primary"
             }`}
           >
@@ -178,7 +178,7 @@ export default function OrderListPage() {
                 href={buildHref({ page: String(p) })}
                 className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                   p === page
-                    ? "bg-accent-primary text-background"
+                    ? "bg-accent-primary text-on-accent"
                     : "text-text-secondary hover:bg-surface-tertiary"
                 }`}
               >

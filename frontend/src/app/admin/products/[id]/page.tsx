@@ -111,7 +111,7 @@ export default function EditProductPage({
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <Link href="/admin/products" className="text-sm text-text-muted hover:text-accent-primary">
+        <Link href="/admin/products" className="text-sm text-text-muted hover:text-accent-strong">
           ← Back to products
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-text-primary">Edit Product</h1>
@@ -139,7 +139,7 @@ export default function EditProductPage({
               type="button"
               onClick={handleGenerateDescription}
               disabled={generating}
-              className="flex items-center gap-1.5 rounded-lg bg-accent-tertiary/10 px-3 py-1 text-xs font-medium text-accent-primary transition-colors hover:bg-accent-tertiary/20 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg bg-accent-tertiary px-3 py-1 text-xs font-medium text-accent-primary transition-colors hover:bg-accent-secondary hover:text-white disabled:opacity-50"
             >
               {generating ? (
                 <div className="h-3 w-3 animate-spin rounded-full border border-accent-primary border-t-transparent" />
@@ -193,7 +193,7 @@ export default function EditProductPage({
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-accent-primary px-6 py-2 text-sm font-semibold text-background transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50"
+            className="rounded-lg bg-accent-primary px-6 py-2 text-sm font-semibold text-on-accent transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>

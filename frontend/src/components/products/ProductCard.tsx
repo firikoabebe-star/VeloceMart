@@ -22,7 +22,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/30"
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-surface transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/60"
     >
       {/* Image placeholder */}
       <div className="relative aspect-[4/3] overflow-hidden bg-surface-tertiary">
@@ -70,13 +70,13 @@ export default function ProductCard({ product }: { product: Product }) {
         <span className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
           {product.category.name}
         </span>
-        <h3 className="text-sm font-semibold text-text-primary line-clamp-1 group-hover:text-accent-primary transition-colors">
+        <h3 className="text-sm font-semibold text-text-primary line-clamp-1 group-hover:text-accent-strong transition-colors">
           {product.name}
         </h3>
 
         {/* Price */}
         {range && (
-          <p className="mt-1 text-sm font-bold text-accent-primary">
+          <p className="mt-1 text-sm font-bold text-accent-strong">
             {range.min === range.max
               ? formatPrice(range.min)
               : `${formatPrice(range.min)} – ${formatPrice(range.max)}`}

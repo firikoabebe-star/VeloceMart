@@ -29,7 +29,12 @@ export default async function CategoryPage({
   const sp = await searchParams;
   const slug = slugs.join("-");
 
-  const category = await getCategoryBySlug(slug);
+  let category;
+  try {
+    category = await getCategoryBySlug(slug);
+  } catch {
+    notFound();
+  }
   if (!category) notFound();
 
   const filters: ProductFilters = {

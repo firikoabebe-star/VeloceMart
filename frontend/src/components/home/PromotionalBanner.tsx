@@ -45,36 +45,36 @@ export default function PromotionalBanner({
           variants={variants}
           className={`relative isolate overflow-hidden rounded-2xl ${
             isAccent
-              ? "bg-gradient-to-br from-accent-primary/10 via-accent-secondary/5 to-accent-tertiary/10"
-              : "bg-gradient-to-br from-accent-tertiary/10 via-accent-secondary/5 to-accent-primary/10"
-          } border border-accent-primary/10 p-8 sm:p-12 lg:p-16`}
+              ? "bg-gradient-to-br from-accent-tertiary via-accent-secondary to-accent-tertiary"
+              : "bg-gradient-to-br from-accent-secondary via-accent-tertiary to-accent-secondary"
+          } border border-accent-primary/50 p-8 sm:p-12 lg:p-16`}
         >
           {/* Decorative blobs */}
           <div
             aria-hidden="true"
             className={`pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full blur-[80px] ${
               isAccent
-                ? "bg-accent-primary/10"
-                : "bg-accent-tertiary/10"
+                ? "bg-accent-primary/40"
+                : "bg-accent-secondary/40"
             }`}
           />
           <div
             aria-hidden="true"
             className={`pointer-events-none absolute -bottom-20 -left-20 h-48 w-48 rounded-full blur-[60px] ${
               isAccent
-                ? "bg-accent-secondary/10"
-                : "bg-accent-primary/10"
+                ? "bg-accent-secondary/30"
+                : "bg-accent-primary/30"
             }`}
           />
 
           <div className="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
             {/* Content */}
             <div className="flex-1">
-              <h3 className="text-2xl font-bold tracking-tight text-text-primary sm:text-3xl lg:text-4xl">
+              <h3 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
                 {title}
               </h3>
               {subtitle && (
-                <p className="mt-3 max-w-lg text-sm leading-relaxed text-text-secondary sm:text-base">
+                <p className="mt-3 max-w-lg text-sm leading-relaxed text-accent-primary sm:text-base">
                   {subtitle}
                 </p>
               )}
@@ -83,7 +83,7 @@ export default function PromotionalBanner({
             {/* CTA */}
             <a
               href={ctaHref}
-              className="group relative inline-flex shrink-0 items-center gap-2 overflow-hidden rounded-lg bg-accent-primary px-7 py-3.5 text-sm font-semibold text-background transition-all duration-300 hover:shadow-glow-accent"
+              className="group relative inline-flex shrink-0 items-center gap-2 overflow-hidden rounded-lg bg-accent-primary px-7 py-3.5 text-sm font-semibold text-on-accent transition-all duration-300 hover:shadow-glow-accent"
             >
               <span className="relative z-10">{ctaLabel}</span>
               <svg

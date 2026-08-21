@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import {
   BarChart,
   Bar,
@@ -34,7 +34,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_BADGE: Record<string, string> = {
   PENDING: "bg-warning/10 text-warning border-warning/20",
-  CONFIRMED: "bg-accent-primary/10 text-accent-primary border-accent-primary/20",
+  CONFIRMED: "bg-accent-primary text-on-accent border-accent-primary/50",
   SHIPPED: "bg-[#3498DB]/10 text-[#3498DB] border-[#3498DB]/20",
   DELIVERED: "bg-success/10 text-success border-success/20",
   CANCELLED: "bg-error/10 text-error border-error/20",
@@ -204,8 +204,8 @@ export default function AccountOverviewPage() {
     <div className="animate-fade-in space-y-8">
       {/* Welcome header */}
       <div className="relative overflow-hidden rounded-xl border border-border/50 bg-surface p-6 sm:p-8">
-        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-accent-primary/5 blur-2xl" />
-        <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-accent-tertiary/5 blur-xl" />
+        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-accent-primary/25 blur-2xl" />
+        <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-accent-tertiary/30 blur-xl" />
         <div className="relative">
           <h1 className="text-2xl font-bold tracking-tight text-text-primary">
             {loading || authLoading ? (
@@ -213,7 +213,7 @@ export default function AccountOverviewPage() {
             ) : (
               <>
                 Welcome back,{" "}
-                <span className="text-accent-primary">{user?.firstName}</span>
+                <span className="text-accent-strong">{user?.firstName}</span>
               </>
             )}
           </h1>
@@ -238,14 +238,14 @@ export default function AccountOverviewPage() {
           : statCards.map((item, idx) => (
               <div
                 key={item.label}
-                className="group rounded-xl border border-border/50 bg-surface p-5 transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/20"
+                className="group rounded-xl border border-border/50 bg-surface p-5 transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/50"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div className="flex items-start justify-between">
                   <p className="text-sm font-medium text-text-muted">
                     {item.label}
                   </p>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-tertiary/5 text-accent-primary transition-transform duration-200 group-hover:scale-110 group-hover:bg-accent-tertiary/10">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-tertiary text-accent-primary transition-transform duration-200 group-hover:scale-110 group-hover:bg-accent-secondary group-hover:text-white">
                     <StatIcon label={item.label} />
                   </span>
                 </div>
@@ -289,7 +289,7 @@ export default function AccountOverviewPage() {
               Spending Over Time
             </h2>
             {spendingData.length > 0 && (
-              <span className="rounded-full bg-accent-primary/10 px-2.5 py-0.5 text-xs font-medium text-accent-primary">
+              <span className="rounded-full bg-accent-primary px-2.5 py-0.5 text-xs font-medium text-on-accent">
                 Total: {formatCurrency(stats?.totalSpent ?? 0)}
               </span>
             )}
@@ -431,7 +431,7 @@ export default function AccountOverviewPage() {
           </div>
           <Link
             href="/account/orders"
-            className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-accent-primary transition-all duration-200 hover:bg-accent-primary/10"
+            className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-accent-strong transition-all duration-200 hover:bg-accent-primary/25"
           >
             View all
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -465,17 +465,17 @@ export default function AccountOverviewPage() {
               <Link
                 key={order.id}
                 href={`/account/orders/${order.id}`}
-                className="group flex items-center justify-between rounded-lg border border-border/30 bg-surface-tertiary/30 p-4 transition-all duration-200 hover:border-accent-primary/20 hover:bg-surface-tertiary/60 hover:shadow-elevation-1"
+                className="group flex items-center justify-between rounded-lg border border-border/30 bg-surface-tertiary/30 p-4 transition-all duration-200 hover:border-accent-primary/50 hover:bg-surface-tertiary/60 hover:shadow-elevation-1"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-tertiary/5 text-accent-primary transition-transform duration-200 group-hover:scale-110">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-tertiary text-accent-primary transition-transform duration-200 group-hover:scale-110">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-text-primary group-hover:text-accent-primary transition-colors">
+                    <p className="text-sm font-semibold text-text-primary group-hover:text-accent-strong transition-colors">
                       #{order.id.slice(0, 8)}
                     </p>
                     <div className="mt-0.5 flex items-center gap-2 text-xs text-text-muted">

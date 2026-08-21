@@ -54,7 +54,7 @@ export default function UserDetailPage({
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <Link href="/admin/users" className="text-sm text-text-muted hover:text-accent-primary">
+        <Link href="/admin/users" className="text-sm text-text-muted hover:text-accent-strong">
           ← Back to users
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-text-primary">
@@ -108,7 +108,7 @@ export default function UserDetailPage({
             disabled={updating || user.role === "CUSTOMER"}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
               user.role === "CUSTOMER"
-                ? "bg-accent-primary text-background"
+                ? "bg-accent-primary text-on-accent"
                 : "bg-surface-tertiary text-text-secondary hover:text-text-primary"
             }`}
           >
@@ -119,7 +119,7 @@ export default function UserDetailPage({
             disabled={updating || user.role === "ADMIN"}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
               user.role === "ADMIN"
-                ? "bg-accent-primary text-background"
+                ? "bg-accent-primary text-on-accent"
                 : "bg-surface-tertiary text-text-secondary hover:text-text-primary"
             }`}
           >

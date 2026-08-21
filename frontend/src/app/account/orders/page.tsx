@@ -18,7 +18,7 @@ const STATUS_STYLES: Record<OrderStatus, { badge: string; dot: string }> = {
     dot: "bg-warning",
   },
   CONFIRMED: {
-    badge: "bg-accent-primary/10 text-accent-primary border-accent-primary/20",
+    badge: "bg-accent-primary text-on-accent border-accent-primary/50",
     dot: "bg-accent-primary",
   },
   SHIPPED: {
@@ -157,7 +157,7 @@ export default function OrderHistoryPage() {
               href={buildHref({ page: String(p) })}
               className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
                 p === page
-                  ? "bg-accent-primary text-background shadow-sm"
+                  ? "bg-accent-primary text-on-accent shadow-sm"
                   : "text-text-secondary hover:bg-surface-tertiary hover:text-text-primary"
               }`}
             >
@@ -204,7 +204,7 @@ export default function OrderHistoryPage() {
               href={buildHref({ status: opt.value, page: "1" })}
               className={`relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-accent-primary text-background shadow-sm"
+                  ? "bg-accent-primary text-on-accent shadow-sm"
                   : "bg-surface-tertiary text-text-secondary hover:bg-surface-tertiary/80 hover:text-text-primary"
               }`}
             >
@@ -257,19 +257,19 @@ export default function OrderHistoryPage() {
               <Link
                 key={order.id}
                 href={`/account/orders/${order.id}`}
-                className="group flex items-center justify-between rounded-xl border border-border/50 bg-surface p-5 transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/20"
+                className="group flex items-center justify-between rounded-xl border border-border/50 bg-surface p-5 transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/50"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
                 <div className="flex items-center gap-4">
                   {/* Icon */}
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-tertiary/5 text-accent-primary transition-all duration-200 group-hover:scale-110 group-hover:bg-accent-tertiary/10">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-tertiary text-accent-primary transition-all duration-200 group-hover:scale-110 group-hover:bg-accent-secondary group-hover:text-white">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                     </svg>
                   </div>
                   {/* Info */}
                   <div>
-                    <p className="text-sm font-semibold text-text-primary group-hover:text-accent-primary transition-colors">
+                    <p className="text-sm font-semibold text-text-primary group-hover:text-accent-strong transition-colors">
                       #{order.id.slice(0, 8)}
                     </p>
                     <div className="mt-0.5 flex items-center gap-1.5 text-xs text-text-muted">

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useCartStore } from "@/stores/cart-store";
 import MobileDrawer from "./MobileDrawer";
@@ -232,7 +232,7 @@ function AuthButton() {
     return (
       <a
         href="/auth/login"
-        className="hidden rounded-lg bg-accent-primary px-4 py-2 text-sm font-semibold text-background transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent sm:inline-flex"
+        className="hidden rounded-lg bg-accent-primary px-4 py-2 text-sm font-semibold text-on-accent transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent sm:inline-flex"
       >
         Sign In
       </a>
@@ -352,10 +352,10 @@ function MegaMenu({
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="group inline-flex items-center gap-1 text-sm text-text-secondary transition-colors duration-150 hover:text-accent-primary"
+                      className="group inline-flex items-center gap-1 text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
                     >
                       {link.label}
-                      <span className="inline-block text-accent-primary opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100">
+                      <span className="inline-block text-accent-strong opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100">
                         →
                       </span>
                     </a>
@@ -387,7 +387,7 @@ function NavLink({
     return (
       <a
         href={category.href}
-        className="relative px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-primary"
+        className="relative px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-strong"
       >
         {category.label}
       </a>
@@ -409,7 +409,7 @@ function NavLink({
       <button
         aria-expanded={isActive}
         aria-haspopup={hasMega}
-        className="group flex items-center gap-1 px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-primary"
+        className="group flex items-center gap-1 px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-strong"
       >
         {category.label}
         <svg
@@ -508,10 +508,10 @@ export default function Navbar() {
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary">
-              <span className="text-sm font-bold text-background">V</span>
+              <span className="text-sm font-bold text-on-accent">V</span>
             </div>
             <span className="text-lg font-bold tracking-tight text-text-primary">
-              Veloce<span className="text-accent-primary">Mart</span>
+              Veloce<span className="text-accent-strong">Mart</span>
             </span>
           </a>
 
@@ -519,7 +519,7 @@ export default function Navbar() {
           <nav className="hidden lg:flex lg:items-center lg:gap-1">
             <a
               href="/"
-              className="px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-primary"
+              className="px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-strong"
             >
               Home
             </a>

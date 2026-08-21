@@ -80,7 +80,7 @@ export default function Pagination({
             onClick={() => goTo(p)}
             className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
               p === currentPage
-                ? "bg-accent-primary text-background"
+                ? "bg-accent-primary text-on-accent"
                 : "border border-border text-text-secondary hover:border-border-light hover:text-text-primary"
             }`}
           >

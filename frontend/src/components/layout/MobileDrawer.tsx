@@ -134,10 +134,10 @@ export default function MobileDrawer({ isOpen, onClose, categories }: Props) {
             <div className="flex items-center justify-between border-b border-border/20 px-5 py-4">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-primary">
-                  <span className="text-xs font-bold text-background">V</span>
+                  <span className="text-xs font-bold text-on-accent">V</span>
                 </div>
                 <span className="text-base font-bold tracking-tight text-text-primary">
-                  Veloce<span className="text-accent-primary">Mart</span>
+                  Veloce<span className="text-accent-strong">Mart</span>
                 </span>
               </div>
               <button
@@ -165,7 +165,7 @@ export default function MobileDrawer({ isOpen, onClose, categories }: Props) {
                     <a
                       href={cat.href}
                       onClick={onClose}
-                      className="group flex items-center justify-between rounded-lg px-3 py-3 text-base font-medium text-text-secondary transition-colors hover:bg-surface hover:text-accent-primary"
+                      className="group flex items-center justify-between rounded-lg px-3 py-3 text-base font-medium text-text-secondary transition-colors hover:bg-surface hover:text-accent-strong"
                     >
                       {cat.label}
                       {(cat as NavCategory).megaColumns && (
@@ -201,7 +201,7 @@ export default function MobileDrawer({ isOpen, onClose, categories }: Props) {
                                   <a
                                     href={link.href}
                                     onClick={onClose}
-                                    className="block rounded px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-accent-primary"
+                                    className="block rounded px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-accent-strong"
                                   >
                                     {link.label}
                                   </a>
@@ -222,7 +222,7 @@ export default function MobileDrawer({ isOpen, onClose, categories }: Props) {
               <a
                 href="/auth/login"
                 onClick={onClose}
-                className="flex w-full items-center justify-center rounded-lg bg-accent-primary px-4 py-3 text-sm font-semibold text-background transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent"
+                className="flex w-full items-center justify-center rounded-lg bg-accent-primary px-4 py-3 text-sm font-semibold text-on-accent transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent"
               >
                 Sign In / Register
               </a>

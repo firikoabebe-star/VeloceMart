@@ -17,10 +17,10 @@ export default function AuthLayout({
           <Link href="/" className="inline-block">
             <div className="flex items-center justify-center gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-primary">
-                <span className="text-lg font-bold text-background">V</span>
+                <span className="text-lg font-bold text-on-accent">V</span>
               </div>
               <span className="text-2xl font-bold tracking-tight text-text-primary">
-                Veloce<span className="text-accent-primary">Mart</span>
+                Veloce<span className="text-accent-strong">Mart</span>
               </span>
             </div>
           </Link>

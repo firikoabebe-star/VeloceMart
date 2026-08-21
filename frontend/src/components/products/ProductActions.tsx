@@ -105,7 +105,7 @@ export default function ProductActions({ product }: { product: Product }) {
     <div className="flex flex-col gap-6">
       {/* Price */}
       <div>
-        <p className="text-2xl font-bold text-accent-primary">
+        <p className="text-2xl font-bold text-accent-strong">
           {formatPrice(displayPrice)}
           {priceHasRange && (
             <span className="ml-1 text-sm font-normal text-text-muted">
@@ -135,7 +135,7 @@ export default function ProductActions({ product }: { product: Product }) {
                   disabled={!isAvailable}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
                     isSelected
-                      ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                      ? "border-accent-primary bg-accent-primary text-on-accent"
                       : isAvailable
                         ? "border-border text-text-secondary hover:border-border-light hover:text-text-primary"
                         : "cursor-not-allowed border-border/40 text-text-muted/40 line-through"
@@ -175,7 +175,7 @@ export default function ProductActions({ product }: { product: Product }) {
                   disabled={!isAvailable || isOutOfStock}
                   className={`flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm font-medium transition-all ${
                     isSelected
-                      ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                      ? "border-accent-primary bg-accent-primary text-on-accent"
                       : isOutOfStock
                         ? "cursor-not-allowed border-border/40 text-text-muted/40 line-through"
                         : isAvailable
@@ -251,7 +251,7 @@ export default function ProductActions({ product }: { product: Product }) {
         <button
           onClick={handleAddToCart}
           disabled={!selectedVariant || stock <= 0 || cartStatus === "loading"}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-6 py-3.5 text-sm font-semibold text-background transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:pointer-events-none disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-primary px-6 py-3.5 text-sm font-semibold text-on-accent transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:pointer-events-none disabled:opacity-50"
         >
           {cartStatus === "loading" ? (
             <>

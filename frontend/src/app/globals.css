@@ -13,13 +13,18 @@
   --accent-primary: #FFA586;
   --accent-secondary: #B51A26;
   --accent-tertiary: #541925;
+  /* Accent for text/icons sitting on page/surface backgrounds:
+     deep red in light mode (6.7:1), vivid peach in dark mode (9:1). */
+  --accent-strong: #B51A26;
+  /* Ink for content placed ON accent-primary fills (9:1 on #FFA586). */
+  --on-accent: #161B24;
   --success: #2ECC71;
   --warning: #F39C12;
   --error: #E74C3C;
   --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.1);
   --shadow-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-glow-accent: 0 0 20px hsla(16, 100%, 76%, 0.25);
+  --shadow-glow-accent: 0 0 28px hsla(16, 100%, 66%, 0.45);
 }
 
 /* ── Dark Mode ─────────────────────────────────────────────── */
@@ -35,13 +40,18 @@
   --accent-primary: #FFA586;
   --accent-secondary: #B51A26;
   --accent-tertiary: #541925;
+  /* Accent for text/icons sitting on page/surface backgrounds:
+     vivid peach in dark mode (9:1 on #161B24). */
+  --accent-strong: #FFA586;
+  /* Ink for content placed ON accent-primary fills (9:1 on #FFA586). */
+  --on-accent: #161B24;
   --success: #2ECC71;
   --warning: #F39C12;
   --error: #E74C3C;
   --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-glow-accent: 0 0 20px hsla(16, 100%, 76%, 0.15);
+  --shadow-glow-accent: 0 0 28px hsla(16, 100%, 66%, 0.35);
 }
 
 /* ── Tailwind v4 Theme ─────────────────────────────────────── */
@@ -58,6 +68,8 @@
   --color-accent-primary: var(--accent-primary);
   --color-accent-secondary: var(--accent-secondary);
   --color-accent-tertiary: var(--accent-tertiary);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
@@ -118,8 +130,8 @@ body {
 }
 
 ::selection {
-  background-color: hsla(16, 100%, 76%, 0.25);
-  color: var(--text-primary);
+  background-color: #FFA586;
+  color: #161B24;
 }
 
 /* Scrollbar styling */
@@ -157,7 +169,7 @@ input:focus,
 textarea:focus,
 select:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px hsla(16, 100%, 76%, 0.1);
+  box-shadow: 0 0 0 3px hsla(16, 100%, 66%, 0.3);
 }
 
 input::placeholder,

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
@@ -22,19 +21,6 @@ export const metadata: Metadata = {
     "Premium fashion and accessories for the modern individual. Curated collections designed to elevate your everyday style.",
 };
 
-const themeScript = `
-(function() {
-  try {
-    var t = localStorage.getItem('theme');
-    if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  } catch(e) {}
-})()
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,13 +32,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: themeScript }}
-        />
-      </head>
+      <head />
       <body className="flex min-h-full flex-col bg-background text-text-primary">
         <ThemeProvider>
           <AuthProvider>

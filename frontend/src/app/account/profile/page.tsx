@@ -113,7 +113,7 @@ export default function ProfilePage() {
     `mt-1 block w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-all duration-200 ${
       hasError
         ? "border-error/60 ring-2 ring-error/10 focus:border-error"
-        : "border-border focus:border-accent-primary focus:ring-3 focus:ring-accent-primary/10"
+        : "border-border focus:border-accent-primary focus:ring-3 focus:ring-accent-primary/50"
     } bg-surface text-text-primary placeholder:text-text-muted`;
 
   return (
@@ -131,7 +131,7 @@ export default function ProfilePage() {
       {/* Profile Information Card */}
       <div className="rounded-xl border border-border/50 bg-surface p-6 sm:p-8 transition-all duration-200 hover:shadow-elevation-1">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary/10 text-accent-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary text-on-accent">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
@@ -223,7 +223,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={profileSaving}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
             >
               {profileSaving ? (
                 <>
@@ -249,7 +249,7 @@ export default function ProfilePage() {
       {/* Change Password Card */}
       <div className="rounded-xl border border-border/50 bg-surface p-6 sm:p-8 transition-all duration-200 hover:shadow-elevation-1">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary/10 text-accent-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary text-on-accent">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
             </svg>
@@ -376,7 +376,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={passwordSaving}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
             >
               {passwordSaving ? (
                 <>

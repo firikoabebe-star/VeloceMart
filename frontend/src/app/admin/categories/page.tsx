@@ -68,7 +68,7 @@ export default function CategoryListPage() {
         </div>
         <Link
           href="/admin/categories/new"
-          className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-semibold text-background transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent"
+          className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-semibold text-on-accent transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -159,7 +159,7 @@ export default function CategoryListPage() {
                 href={`/admin/categories?page=${p}`}
                 className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                   p === page
-                    ? "bg-accent-primary text-background"
+                    ? "bg-accent-primary text-on-accent"
                     : "text-text-secondary hover:bg-surface-tertiary"
                 }`}
               >

@@ -120,7 +120,7 @@ export default function FilterSidebar({
         {hasActiveFilters && (
           <button
             onClick={clearAll}
-            className="text-xs font-medium text-accent-primary hover:text-accent-secondary transition-colors"
+            className="text-xs font-medium text-accent-strong hover:text-accent-strong transition-colors"
           >
             Clear all
           </button>
@@ -141,7 +141,7 @@ export default function FilterSidebar({
                 }
                 className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
                   activeCategoryId === cat.id
-                    ? "bg-accent-primary/10 font-medium text-accent-primary"
+                    ? "bg-accent-primary font-medium text-on-accent"
                     : "text-text-secondary hover:bg-surface-tertiary hover:text-text-primary"
                 }`}
               >
@@ -180,7 +180,7 @@ export default function FilterSidebar({
                 }
                 className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
                   isActive
-                    ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                    ? "border-accent-primary bg-accent-primary text-on-accent"
                     : "border-border text-text-secondary hover:border-border-light hover:text-text-primary"
                 }`}
               >
@@ -229,7 +229,7 @@ export default function FilterSidebar({
               onClick={() => toggleArrayParam("size", size)}
               className={`flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg border px-2.5 text-xs font-medium transition-colors ${
                 activeSizes.includes(size)
-                  ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
+                  ? "border-accent-primary bg-accent-primary text-on-accent"
                   : "border-border text-text-secondary hover:border-border-light hover:text-text-primary"
               }`}
             >
@@ -266,7 +266,7 @@ export default function FilterSidebar({
       {onClose && (
         <button
           onClick={onClose}
-          className="mt-2 flex w-full items-center justify-center rounded-lg bg-accent-primary px-4 py-3 text-sm font-semibold text-background transition-colors hover:bg-accent-primary/90 lg:hidden"
+          className="mt-2 flex w-full items-center justify-center rounded-lg bg-accent-primary px-4 py-3 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-primary/90 lg:hidden"
         >
           Show Results
         </button>
@@ -327,7 +327,7 @@ function PriceInput({
         onKeyDown={(e) => {
           if (e.key === "Enter") onCommit(value);
         }}
-        className="w-full rounded-lg border border-border bg-background py-2 pl-6 pr-2 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20"
+        className="w-full rounded-lg border border-border bg-background py-2 pl-6 pr-2 text-sm text-text-primary placeholder-text-muted transition-colors focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/40"
       />
     </div>
   );

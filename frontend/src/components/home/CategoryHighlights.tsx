@@ -34,14 +34,11 @@ function getCategoryIcon(name: string): React.ReactNode {
   return categoryIcons.default;
 }
 
-/* ── Color stops for gradient backgrounds ─────────────────── */
+/* ── Solid accent blocks for category icon chips ──────────── */
 const accentColors = [
-  "from-accent-primary/20 to-accent-primary/5",
-  "from-accent-secondary/20 to-accent-secondary/5",
-  "from-accent-tertiary/20 to-accent-tertiary/5",
-  "from-accent-primary/15 to-accent-secondary/10",
-  "from-accent-secondary/15 to-accent-tertiary/10",
-  "from-accent-tertiary/15 to-accent-primary/10",
+  { bg: "bg-accent-primary", icon: "text-on-accent" },
+  { bg: "bg-accent-secondary", icon: "text-white" },
+  { bg: "bg-accent-tertiary", icon: "text-accent-primary" },
 ];
 
 /* ── CategoryCard ─────────────────────────────────────────── */
@@ -60,18 +57,18 @@ function CategoryCard({
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
       whileHover={{ y: -4 }}
-      className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-border/20 bg-surface p-5 transition-all duration-300 hover:border-accent-primary/30 hover:shadow-elevation-2"
+      className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-border/20 bg-surface p-5 transition-all duration-300 hover:border-accent-primary/60 hover:shadow-elevation-2"
     >
       {/* Icon container */}
       <div
-        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br text-accent-primary transition-all duration-300 group-hover:scale-110 ${accentColors[index % accentColors.length]}`}
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg transition-all duration-300 group-hover:scale-110 ${accentColors[index % accentColors.length].bg} ${accentColors[index % accentColors.length].icon}`}
       >
         {getCategoryIcon(category.name)}
       </div>
 
       {/* Content */}
       <div className="flex-1">
-        <h3 className="text-sm font-semibold text-text-primary transition-colors duration-200 group-hover:text-accent-primary">
+        <h3 className="text-sm font-semibold text-text-primary transition-colors duration-200 group-hover:text-accent-strong">
           {category.name}
         </h3>
         <p className="mt-0.5 text-xs text-text-muted">
@@ -82,7 +79,7 @@ function CategoryCard({
 
       {/* Arrow */}
       <svg
-        className="h-4 w-4 shrink-0 text-text-muted transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent-primary"
+        className="h-4 w-4 shrink-0 text-text-muted transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent-strong"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -124,7 +121,7 @@ export default function CategoryHighlights() {
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="mb-10 text-center"
         >
-          <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-accent-primary">
+          <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-accent-strong">
             Categories
           </span>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">

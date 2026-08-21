@@ -55,7 +55,7 @@ export default function FeaturedProducts() {
           className="mb-10 flex flex-col items-center justify-between gap-4 sm:flex-row"
         >
           <div>
-            <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-accent-primary">
+            <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-accent-strong">
               Featured
             </span>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
@@ -67,7 +67,7 @@ export default function FeaturedProducts() {
           </div>
           <a
             href="/collections/new"
-            className="group inline-flex shrink-0 items-center gap-2 text-sm font-medium text-accent-primary transition-all duration-200 hover:text-accent-primary/80"
+            className="group inline-flex shrink-0 items-center gap-2 text-sm font-medium text-accent-strong transition-all duration-200 hover:text-accent-strong/80"
           >
             View All
             <svg

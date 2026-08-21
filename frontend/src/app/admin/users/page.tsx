@@ -120,7 +120,7 @@ export default function UserListPage() {
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                         user.role === "ADMIN"
-                          ? "bg-accent-primary/10 text-accent-primary"
+                          ? "bg-accent-primary text-on-accent"
                           : "bg-surface-tertiary text-text-secondary"
                       }`}
                     >
@@ -159,7 +159,7 @@ export default function UserListPage() {
                 href={`/admin/users?page=${p}${search ? `&search=${search}` : ""}`}
                 className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                   p === page
-                    ? "bg-accent-primary text-background"
+                    ? "bg-accent-primary text-on-accent"
                     : "text-text-secondary hover:bg-surface-tertiary"
                 }`}
               >

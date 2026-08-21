@@ -75,12 +75,12 @@ export default function ActiveFilters({ basePath = "/products" }: Props) {
         <button
           key={`${pill.key}-${pill.value}`}
           onClick={() => remove(pill.key, pill.value)}
-          className="group flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-text-secondary transition-colors hover:border-accent-secondary/40 hover:text-accent-secondary"
+          className="group flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-text-secondary transition-colors hover:border-accent-secondary/70 hover:text-accent-strong"
         >
           <span className="capitalize">{LABEL_MAP[pill.key] ?? pill.key}:</span>
           <span className="font-medium">{pill.label}</span>
           <svg
-            className="h-3 w-3 text-text-muted transition-colors group-hover:text-accent-secondary"
+            className="h-3 w-3 text-text-muted transition-colors group-hover:text-accent-strong"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

@@ -11,8 +11,8 @@ import {
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
   PENDING: "bg-warning/10 text-warning",
-  CONFIRMED: "bg-accent-primary/10 text-accent-primary",
-  SHIPPED: "bg-accent-secondary/10 text-accent-secondary",
+  CONFIRMED: "bg-accent-primary text-on-accent",
+  SHIPPED: "bg-accent-secondary text-accent-secondary",
   DELIVERED: "bg-success/10 text-success",
   CANCELLED: "bg-error/10 text-error",
 };
@@ -91,7 +91,7 @@ export default function OrderDetailPage({
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <Link href="/admin/orders" className="text-sm text-text-muted hover:text-accent-primary">
+        <Link href="/admin/orders" className="text-sm text-text-muted hover:text-accent-strong">
           ← Back to orders
         </Link>
         <div className="mt-2 flex items-center justify-between">
@@ -126,7 +126,7 @@ export default function OrderDetailPage({
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
                   status === "CANCELLED"
                     ? "bg-error/10 text-error hover:bg-error/20"
-                    : "bg-accent-tertiary/10 text-accent-primary hover:bg-accent-tertiary/20"
+                    : "bg-accent-tertiary text-accent-primary hover:bg-accent-secondary hover:text-white"
                 }`}
               >
                 {updating ? "..." : status}

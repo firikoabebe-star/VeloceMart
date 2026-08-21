@@ -72,7 +72,7 @@ export default function NewProductPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <Link href="/admin/products" className="text-sm text-text-muted hover:text-accent-primary">
+        <Link href="/admin/products" className="text-sm text-text-muted hover:text-accent-strong">
           ← Back to products
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-text-primary">Add Product</h1>
@@ -140,7 +140,7 @@ export default function NewProductPage() {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-accent-primary px-6 py-2 text-sm font-semibold text-background transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50"
+            className="rounded-lg bg-accent-primary px-6 py-2 text-sm font-semibold text-on-accent transition-all hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50"
           >
             {loading ? "Creating..." : "Create Product"}
           </button>

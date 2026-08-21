@@ -36,39 +36,7 @@ const trustItems = [
 export default function TrustStrip() {
   return (
     <section className="border-y border-border/70 bg-surface/50">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-        <motion.ul
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-40px" }}
-          className="grid grid-cols-1 gap-8 sm:grid-cols-3"
-        >
-          {trustItems.map((trust) => (
-            <motion.li
-              key={trust.label}
-              variants={item}
-              className="flex items-center justify-center gap-3 sm:justify-start"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-primary/10">
-                <svg
-                  className="h-5 w-5 text-accent-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-text-primary">{trust.label}</p>
-                <p className="text-xs text-text-muted">{trust.sub}</p>
-              </div>
-            </motion.li>
-          ))}
-        </motion.ul>
-      </div>
+      
     </section>
   );
 }

@@ -83,7 +83,7 @@ export default function WishlistPage() {
         </div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface py-20 text-center">
-          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-accent-tertiary/5">
+          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-accent-tertiary">
             <svg
               className="h-8 w-8 text-accent-primary"
               fill="none"
@@ -106,7 +106,7 @@ export default function WishlistPage() {
           </p>
           <Link
             href="/products"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent"
           >
             Browse Products
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -121,7 +121,7 @@ export default function WishlistPage() {
             return (
               <div
                 key={item.id}
-                className="group relative overflow-hidden rounded-xl border border-border/50 bg-surface transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/20"
+                className="group relative overflow-hidden rounded-xl border border-border/50 bg-surface transition-all duration-200 hover:shadow-elevation-2 hover:border-accent-primary/50"
               >
                 {/* Image area */}
                 <div className="relative aspect-square overflow-hidden bg-surface-tertiary">
@@ -180,19 +180,19 @@ export default function WishlistPage() {
                 <div className="p-4">
                   <Link
                     href={`/products/${item.product.slug}`}
-                    className="text-sm font-semibold text-text-primary transition-colors hover:text-accent-primary line-clamp-1"
+                    className="text-sm font-semibold text-text-primary transition-colors hover:text-accent-strong line-clamp-1"
                   >
                     {item.product.name}
                   </Link>
                   {variant && (
-                    <p className="mt-2 text-lg font-bold text-accent-primary tabular-nums">
+                    <p className="mt-2 text-lg font-bold text-accent-strong tabular-nums">
                       ${(variant.price / 100).toFixed(2)}
                     </p>
                   )}
                   <button
                     onClick={() => handleAddToCart(item)}
                     disabled={addingCartId === item.id || !variant}
-                    className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
+                    className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-primary px-4 py-2.5 text-sm font-medium text-on-accent transition-all duration-200 hover:bg-accent-primary/90 hover:shadow-glow-accent disabled:opacity-50 active:scale-[0.98]"
                   >
                     {addingCartId === item.id ? (
                       <>

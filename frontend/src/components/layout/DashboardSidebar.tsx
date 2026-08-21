@@ -92,13 +92,13 @@ export default function DashboardSidebar({
       <div className="flex h-16 shrink-0 items-center border-b border-border/30 px-4">
         <Link href={logoHref} onClick={onClose} className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-primary">
-            <span className="text-sm font-bold text-background">V</span>
+            <span className="text-sm font-bold text-on-accent">V</span>
           </div>
           <span className="text-lg font-bold text-text-primary">
-            Veloce<span className="text-accent-primary">Mart</span>
+            Veloce<span className="text-accent-strong">Mart</span>
           </span>
           {badge && (
-            <span className="ml-1.5 rounded bg-accent-tertiary/20 px-2 py-0.5 text-[11px] font-semibold text-accent-primary">
+            <span className="ml-1.5 rounded bg-accent-tertiary px-2 py-0.5 text-[11px] font-semibold text-accent-primary">
               {badge}
             </span>
           )}
@@ -125,7 +125,7 @@ export default function DashboardSidebar({
             onClick={onClose}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               isActive(item.href)
-                ? "bg-accent-tertiary/10 text-accent-primary"
+                ? "bg-accent-tertiary text-accent-primary"
                 : "text-text-secondary hover:bg-surface-tertiary hover:text-text-primary"
             }`}
           >

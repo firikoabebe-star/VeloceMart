@@ -133,11 +133,11 @@ export default function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
-                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-text-primary placeholder-text-muted transition-all duration-200 focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-text-primary placeholder-text-muted transition-all duration-200 focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/40"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-semibold text-background transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent"
+                  className="shrink-0 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent"
                 >
                   Subscribe
                 </button>
@@ -159,10 +159,10 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <a href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary">
-                <span className="text-sm font-bold text-background">V</span>
+                <span className="text-sm font-bold text-on-accent">V</span>
               </div>
               <span className="text-lg font-bold tracking-tight text-text-primary">
-                Veloce<span className="text-accent-primary">Mart</span>
+                Veloce<span className="text-accent-strong">Mart</span>
               </span>
             </a>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-text-secondary">
@@ -179,7 +179,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/40 text-text-muted transition-all duration-150 hover:border-accent-primary/40 hover:bg-accent-primary/10 hover:text-accent-primary"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/40 text-text-muted transition-all duration-150 hover:border-accent-primary/70 hover:bg-accent-primary/25 hover:text-accent-strong"
                 >
                   {social.icon}
                 </a>
@@ -216,7 +216,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-sm text-text-secondary transition-colors duration-150 hover:text-accent-primary"
+                      className="text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
                     >
                       {link.label}
                     </a>

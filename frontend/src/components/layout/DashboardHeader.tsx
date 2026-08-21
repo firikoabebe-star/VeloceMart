@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
@@ -128,7 +128,7 @@ function HelpButton() {
             <div className="border-t border-border/30 px-4 py-2">
               <a
                 href="#"
-                className="flex items-center gap-2 text-sm text-accent-primary transition-colors hover:text-accent-primary/80"
+                className="flex items-center gap-2 text-sm text-accent-strong transition-colors hover:text-accent-strong/80"
                 onClick={(e) => e.preventDefault()}
               >
                 <svg
@@ -224,7 +224,7 @@ function NotificationBell() {
               <p className="text-sm font-semibold text-text-primary">
                 Notifications
               </p>
-              <span className="rounded-full bg-accent-tertiary/10 px-2 py-0.5 text-[10px] font-medium text-accent-primary">
+              <span className="rounded-full bg-accent-tertiary px-2 py-0.5 text-[10px] font-medium text-accent-primary">
                 {unreadCount} new
               </span>
             </div>
@@ -250,7 +250,7 @@ function NotificationBell() {
                   key={i}
                   className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-tertiary"
                 >
-                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-tertiary/10">
+                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-tertiary">
                     <svg
                       className="h-3.5 w-3.5 text-accent-primary"
                       fill="none"
@@ -280,7 +280,7 @@ function NotificationBell() {
               ))}
             </div>
             <div className="border-t border-border/30 px-4 py-2">
-              <button className="w-full rounded-lg py-1.5 text-center text-xs font-medium text-accent-primary transition-colors hover:bg-accent-tertiary/10">
+              <button className="w-full rounded-lg py-1.5 text-center text-xs font-medium text-accent-strong transition-colors hover:bg-accent-tertiary/25">
                 View all notifications
               </button>
             </div>
