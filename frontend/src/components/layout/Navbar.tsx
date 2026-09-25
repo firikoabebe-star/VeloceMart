@@ -8,140 +8,11 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useCartStore } from "@/stores/cart-store";
 import MobileDrawer from "./MobileDrawer";
 import SearchOverlay from "@/components/search/SearchOverlay";
-
-/* ── Types ────────────────────────────────────────────────── */
-interface MegaColumn {
-  heading: string;
-  links: { label: string; href: string }[];
-}
-
-interface NavCategory {
-  label: string;
-  href: string;
-  megaColumns?: MegaColumn[];
-}
-
-/* ── Data ─────────────────────────────────────────────────── */
-const NAV_CATEGORIES: NavCategory[] = [
-  {
-    label: "Men",
-    href: "/category/men",
-    megaColumns: [
-      {
-        heading: "Clothing",
-        links: [
-          { label: "Tops & Tees", href: "/category/men/tops" },
-          { label: "Hoodies & Sweatshirts", href: "/category/men/hoodies" },
-          { label: "Jackets & Coats", href: "/category/men/jackets" },
-          { label: "Pants & Joggers", href: "/category/men/pants" },
-          { label: "Shorts", href: "/category/men/shorts" },
-        ],
-      },
-      {
-        heading: "Footwear",
-        links: [
-          { label: "Sneakers", href: "/category/men/sneakers" },
-          { label: "Boots", href: "/category/men/boots" },
-          { label: "Sandals", href: "/category/men/sandals" },
-        ],
-      },
-      {
-        heading: "Accessories",
-        links: [
-          { label: "Watches", href: "/category/men/watches" },
-          { label: "Bags & Backpacks", href: "/category/men/bags" },
-          { label: "Hats & Caps", href: "/category/men/hats" },
-          { label: "Belts & Wallets", href: "/category/men/accessories" },
-        ],
-      },
-      {
-        heading: "Collections",
-        links: [
-          { label: "New Arrivals", href: "/collections/new" },
-          { label: "Best Sellers", href: "/collections/bestsellers" },
-          { label: "Sale", href: "/sale" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Women",
-    href: "/category/women",
-    megaColumns: [
-      {
-        heading: "Clothing",
-        links: [
-          { label: "Dresses & Jumpsuits", href: "/category/women/dresses" },
-          { label: "Tops & Blouses", href: "/category/women/tops" },
-          { label: "Jackets & Blazers", href: "/category/women/jackets" },
-          { label: "Pants & Leggings", href: "/category/women/pants" },
-          { label: "Skirts & Shorts", href: "/category/women/skirts" },
-        ],
-      },
-      {
-        heading: "Footwear",
-        links: [
-          { label: "Heels & Platforms", href: "/category/women/heels" },
-          { label: "Flats & Loafers", href: "/category/women/flats" },
-          { label: "Sneakers", href: "/category/women/sneakers" },
-          { label: "Boots", href: "/category/women/boots" },
-        ],
-      },
-      {
-        heading: "Accessories",
-        links: [
-          { label: "Jewelry", href: "/category/women/jewelry" },
-          { label: "Handbags", href: "/category/women/handbags" },
-          { label: "Scarves", href: "/category/women/scarves" },
-          { label: "Sunglasses", href: "/category/women/sunglasses" },
-        ],
-      },
-      {
-        heading: "Collections",
-        links: [
-          { label: "New Arrivals", href: "/collections/new" },
-          { label: "Best Sellers", href: "/collections/bestsellers" },
-          { label: "Sale", href: "/sale" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Accessories",
-    href: "/category/accessories",
-    megaColumns: [
-      {
-        heading: "Bags",
-        links: [
-          { label: "Backpacks", href: "/category/accessories/backpacks" },
-          { label: "Crossbody Bags", href: "/category/accessories/crossbody" },
-          { label: "Tote Bags", href: "/category/accessories/totes" },
-          { label: "Luggage", href: "/category/accessories/luggage" },
-        ],
-      },
-      {
-        heading: "Tech",
-        links: [
-          { label: "Phone Cases", href: "/category/accessories/phone-cases" },
-          { label: "Watch Bands", href: "/category/accessories/watch-bands" },
-          { label: "Headphone Cases", href: "/category/accessories/headphone-cases" },
-        ],
-      },
-      {
-        heading: "Lifestyle",
-        links: [
-          { label: "Wallets & Cardholders", href: "/category/accessories/wallets" },
-          { label: "Keychains", href: "/category/accessories/keychains" },
-          { label: "Water Bottles", href: "/category/accessories/bottles" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Sale",
-    href: "/sale",
-  },
-];
+import {
+  NAV_CATEGORIES,
+  type MegaLink,
+  type NavCategory,
+} from "@/lib/navigation";
 
 /* ── Theme Toggle ─────────────────────────────────────────── */
 function ThemeToggle() {
@@ -327,11 +198,49 @@ function MegaMenu({
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
+  const [flyout, setFlyout] = useState<
+    { link: MegaLink; top: number; left: number } | null
+  >(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelClose = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setFlyout(null), 150);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const openSubmenu = useCallback((link: MegaLink, trigger: HTMLElement) => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    cancelClose();
+    const pr = panel.getBoundingClientRect();
+    const tr = trigger.getBoundingClientRect();
+    const width = 224;
+    const gap = 12;
+    const opensLeft = pr.right - tr.right < width + gap;
+    setFlyout({
+      link,
+      top: tr.top - pr.top,
+      left: opensLeft ? tr.left - pr.left - width - gap : tr.right - pr.left + gap,
+    });
+  }, [cancelClose]);
+
   if (!category.megaColumns) return null;
 
   return (
     <motion.div
       key={category.label}
+      ref={panelRef}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 6 }}
@@ -348,24 +257,89 @@ function MegaMenu({
                 {col.heading}
               </h4>
               <ul className="space-y-1.5">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="group inline-flex items-center gap-1 text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
-                    >
-                      {link.label}
-                      <span className="inline-block text-accent-strong opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100">
-                        →
-                      </span>
-                    </a>
-                  </li>
-                ))}
+                {col.links.map((link) =>
+                  link.children ? (
+                    <li key={link.label}>
+                      <button
+                        type="button"
+                        aria-expanded={flyout?.link.label === link.label}
+                        aria-haspopup="true"
+                        onMouseEnter={(e) => openSubmenu(link, e.currentTarget)}
+                        onMouseLeave={scheduleClose}
+                        onFocus={(e) => openSubmenu(link, e.currentTarget)}
+                        onBlur={scheduleClose}
+                        className="group inline-flex items-center gap-1 text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
+                      >
+                        {link.label}
+                        <span
+                          className={`inline-block text-accent-strong transition-all duration-150 ${
+                            flyout?.link.label === link.label
+                              ? "translate-x-0.5 opacity-100"
+                              : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
+                          }`}
+                        >
+                          →
+                        </span>
+                      </button>
+                    </li>
+                  ) : (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="group inline-flex items-center gap-1 text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
+                      >
+                        {link.label}
+                        <span className="inline-block text-accent-strong opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100">
+                          →
+                        </span>
+                      </a>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ))}
         </div>
       </div>
+
+      <AnimatePresence>
+        {flyout && (
+          <motion.div
+            key={flyout.link.label}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            onMouseEnter={cancelClose}
+            onMouseLeave={scheduleClose}
+            className="absolute z-50 w-56"
+            style={{ top: flyout.top, left: flyout.left }}
+          >
+            <div className="overflow-hidden rounded-xl border border-border/50 bg-surface/95 p-1 shadow-elevation-3 backdrop-blur-xl">
+              <div className="rounded-lg bg-background/60 p-4">
+                <h5 className="mb-2 text-xs font-semibold uppercase tracking-widest text-text-muted">
+                  {flyout.link.label}
+                </h5>
+                <ul className="space-y-1.5">
+                  {flyout.link.children!.map((child) => (
+                    <li key={child.label}>
+                      <a
+                        href={child.href}
+                        className="group inline-flex items-center gap-1 text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
+                      >
+                        {child.label}
+                        <span className="inline-block text-accent-strong opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-100">
+                          →
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -406,12 +380,15 @@ function NavLink({
         }
       }}
     >
-      <button
+      <Link
+        href={category.href}
         aria-expanded={isActive}
-        aria-haspopup={hasMega}
-        className="group flex items-center gap-1 px-3 py-6 text-sm font-medium text-text-secondary transition-colors duration-150 hover:text-accent-strong"
+        aria-haspopup="true"
+        className="group flex items-center gap-1 px-3 py-6 text-sm font-medium text-text-secondary"
       >
-        {category.label}
+        <span className="underline decoration-transparent decoration-2 underline-offset-[6px] transition-all duration-200 ease-out group-hover:decoration-accent-strong">
+          {category.label}
+        </span>
         <svg
           className={`h-3 w-3 transition-transform duration-200 ${
             isActive ? "rotate-180" : ""
@@ -423,7 +400,7 @@ function NavLink({
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
-      </button>
+      </Link>
       <AnimatePresence>
         {isActive && (
           <MegaMenu

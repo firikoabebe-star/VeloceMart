@@ -2,19 +2,9 @@
 
 import { useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
+import type { NavCategory } from "@/lib/navigation";
 
 /* ── Types ────────────────────────────────────────────────── */
-interface MegaColumn {
-  heading: string;
-  links: { label: string; href: string }[];
-}
-
-interface NavCategory {
-  label: string;
-  href: string;
-  megaColumns?: MegaColumn[];
-}
-
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -190,23 +180,54 @@ export default function MobileDrawer({ isOpen, onClose, categories }: Props) {
                               {col.heading}
                             </span>
                             <ul className="mt-1 space-y-0.5">
-                              {col.links.map((link, li) => (
-                                <motion.li
-                                  key={link.label}
-                                  custom={li}
-                                  variants={subLinkVariants}
-                                  initial="hidden"
-                                  animate="visible"
-                                >
-                                  <a
-                                    href={link.href}
-                                    onClick={onClose}
-                                    className="block rounded px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-accent-strong"
+                              {col.links.map((link, li) =>
+                                link.children ? (
+                                  <li key={link.label}>
+                                    <a
+                                      href={link.href}
+                                      onClick={onClose}
+                                      className="block rounded px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-accent-strong"
+                                    >
+                                      {link.label}
+                                    </a>
+                                    <ul className="mt-0.5 space-y-0.5">
+                                      {link.children.map((child, ci) => (
+                                        <motion.li
+                                          key={child.label}
+                                          custom={ci}
+                                          variants={subLinkVariants}
+                                          initial="hidden"
+                                          animate="visible"
+                                        >
+                                          <a
+                                            href={child.href}
+                                            onClick={onClose}
+                                            className="block rounded px-3 py-1.5 pl-6 text-sm text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-accent-strong"
+                                          >
+                                            {child.label}
+                                          </a>
+                                        </motion.li>
+                                      ))}
+                                    </ul>
+                                  </li>
+                                ) : (
+                                  <motion.li
+                                    key={link.label}
+                                    custom={li}
+                                    variants={subLinkVariants}
+                                    initial="hidden"
+                                    animate="visible"
                                   >
-                                    {link.label}
-                                  </a>
-                                </motion.li>
-                              ))}
+                                    <a
+                                      href={link.href}
+                                      onClick={onClose}
+                                      className="block rounded px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-accent-strong"
+                                    >
+                                      {link.label}
+                                    </a>
+                                  </motion.li>
+                                ),
+                              )}
                             </ul>
                           </div>
                         ))}

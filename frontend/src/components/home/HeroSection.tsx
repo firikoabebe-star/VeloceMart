@@ -131,87 +131,36 @@ const cardFloat3 = {
   },
 };
 
-/* ── Feature highlights ─────────────────────────────────── */
+/* ── Category cards ─────────────────────────────────────── */
 
-const HERO_FEATURES = [
+const HERO_CATEGORIES = [
   {
-    title: "Premium Quality",
-    description: "Crafted with care",
-    bg: "bg-accent-primary",
-    iconColor: "text-on-accent",
-    titleColor: "text-text-primary",
-    descColor: "text-text-secondary",
+    label: "Men",
+    href: "/category/men",
+    image:
+      "https://res.cloudinary.com/zx27qshh/image/upload/v1787564187/men.webp",
     shape: "rounded-2xl",
-    icon: (
-      <svg
-        className="h-5 w-5"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="m9 12 2 2 4-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
   },
   {
-    title: "Fast Shipping",
-    description: "Delivered to your door",
-    bg: "bg-accent-secondary",
-    iconColor: "text-white",
-    titleColor: "text-text-primary",
-    descColor: "text-text-secondary",
+    label: "Women",
+    href: "/category/women",
+    image:
+      "https://res.cloudinary.com/zx27qshh/image/upload/v1787562436/women.webp",
     shape: "rounded-3xl",
-    icon: (
-      <svg
-        className="h-5 w-5"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M1 3h15v13H1z" />
-        <path d="M16 8h4l3 3v5h-7V8z" />
-        <circle cx="5.5" cy="18.5" r="2.5" />
-        <circle cx="18.5" cy="18.5" r="2.5" />
-      </svg>
-    ),
   },
   {
-    title: "Secure Checkout",
-    description: "Your data stays protected",
-    bg: "bg-surface-tertiary",
-    iconColor: "text-accent-strong",
-    titleColor: "text-text-primary",
-    descColor: "text-text-secondary",
+    label: "Kids",
+    href: "/category/kids",
+    image:
+      "https://res.cloudinary.com/zx27qshh/image/upload/v1787562461/kids.jpg",
     shape: "rounded-xl",
-    icon: (
-      <svg
-        className="h-5 w-5"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
   },
   {
-    title: "Easy Returns",
-    description: "30-day return policy",
-    bg: "bg-accent-primary",
-    iconColor: "text-on-accent",
-    titleColor: "text-text-primary",
-    descColor: "text-text-secondary",
+    label: "Sale",
+    href: "/sale",
+    image:
+      "https://res.cloudinary.com/zx27qshh/image/upload/v1787571664/sale.avif",
     shape: "rounded-2xl rounded-tr-[2rem]",
-    icon: (
-      <svg
-        className="h-5 w-5"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M1 4v6h6" />
-        <path d="M23 20v-6h-6" />
-        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
   },
 ];
 
@@ -316,30 +265,41 @@ export default function HeroSection() {
             </div>
           </motion.div>
 
-          {/* Feature highlights — mobile 2×2 */}
+          {/* Category cards — mobile 2×2 */}
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6, ease: easeOut }}
             className="grid grid-cols-2 gap-4 sm:gap-5"
           >
-            {HERO_FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className={`flex items-start gap-3 p-5 ${f.bg} ${f.shape}`}
+            {HERO_CATEGORIES.map((cat) => (
+              <a
+                key={cat.label}
+                href={cat.href}
+                className={`group relative block overflow-hidden ${cat.shape}`}
               >
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center ${f.iconColor}`}>
-                  {f.icon}
+                <div className="relative aspect-[5/2] w-full overflow-hidden">
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/15 transition-colors duration-300 group-hover:bg-black/10" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="absolute text-xl font-bold text-white/90 drop-shadow-md transition-opacity duration-300 group-hover:opacity-0">
+                      {cat.label}
+                    </span>
+                    <span className="absolute inline-flex items-center gap-1 text-xl font-bold text-white drop-shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-90">
+                      Go Shopping
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className={`text-sm font-semibold leading-snug ${f.titleColor}`}>
-                    {f.title}
-                  </p>
-                  <p className={`mt-1 text-xs leading-relaxed ${f.descColor}`}>
-                    {f.description}
-                  </p>
-                </div>
-              </div>
+              </a>
             ))}
           </motion.div>
         </div>
@@ -529,30 +489,41 @@ export default function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Feature highlights — full-width row below split screen */}
+          {/* Category cards — full-width row below split screen */}
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8, ease: easeOut }}
             className="mt-16 grid grid-cols-2 gap-5 lg:grid-cols-4"
           >
-            {HERO_FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className={`flex items-start gap-3 p-6 ${f.bg} ${f.shape}`}
+            {HERO_CATEGORIES.map((cat) => (
+              <a
+                key={cat.label}
+                href={cat.href}
+                className={`group relative block overflow-hidden ${cat.shape}`}
               >
-                <div className={`flex h-11 w-11 shrink-0 items-center justify-center ${f.iconColor}`}>
-                  {f.icon}
+                <div className="relative aspect-[5/2] w-full overflow-hidden">
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/15 transition-colors duration-300 group-hover:bg-black/10" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="absolute text-2xl font-bold text-white/90 drop-shadow-md transition-opacity duration-300 lg:text-3xl group-hover:opacity-0">
+                      {cat.label}
+                    </span>
+                    <span className="absolute inline-flex items-center gap-1 text-2xl font-bold text-white drop-shadow-md opacity-0 transition-opacity duration-300 lg:text-3xl group-hover:opacity-90">
+                      Go Shopping
+                      <svg className="h-5 w-5 lg:h-6 lg:w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className={`text-sm font-semibold leading-snug ${f.titleColor}`}>
-                    {f.title}
-                  </p>
-                  <p className={`mt-1 text-xs leading-relaxed ${f.descColor}`}>
-                    {f.description}
-                  </p>
-                </div>
-              </div>
+              </a>
             ))}
           </motion.div>
         </div>

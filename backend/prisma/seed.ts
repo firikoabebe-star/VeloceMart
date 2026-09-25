@@ -38,6 +38,36 @@ const CATEGORIES: Record<string, string> = {
   'women-handbags': "Women's Handbags",
   'women-scarves': "Women's Scarves",
   'women-sunglasses': "Women's Sunglasses",
+  // Kids
+  kids: 'Kids',
+  'kids-teens': 'Teens (13 - 17 years)',
+  'kids-big-kids': 'Older Kids (7 - 12 years)',
+  'kids-little-kids': 'Younger Kids (3 - 7 years)',
+  'kids-baby-toddler': 'Baby & Toddler (0 - 3 years)',
+  'kids-tops': "Kids' Tops & Tees",
+  'kids-hoodies': "Kids' Hoodies & Sweatshirts",
+  'kids-jackets': "Kids' Jackets",
+  'kids-pants': "Kids' Pants & Joggers",
+  'kids-shorts': "Kids' Shorts",
+  'kids-sneakers': "Kids' Sneakers",
+  'kids-boots': "Kids' Boots",
+  'kids-sandals': "Kids' Sandals",
+  // Sport
+  'men-running': "Men's Running",
+  'men-football': "Men's Football",
+  'men-basketball': "Men's Basketball",
+  'men-physical-education': "Men's Physical Education",
+  'men-skateboarding': "Men's Skateboarding",
+  'women-running': "Women's Running",
+  'women-football': "Women's Football",
+  'women-basketball': "Women's Basketball",
+  'women-physical-education': "Women's Physical Education",
+  'women-skateboarding': "Women's Skateboarding",
+  'kids-running': "Kids' Running",
+  'kids-football': "Kids' Football",
+  'kids-basketball': "Kids' Basketball",
+  'kids-physical-education': "Kids' Physical Education",
+  'kids-skateboarding': "Kids' Skateboarding",
   // Accessories
   accessories: 'Accessories',
   'accessories-backpacks': 'Backpacks',
@@ -165,6 +195,118 @@ const PRODUCTS: Record<string, ProductSeed[]> = {
     ['Aviator Gold Sunglasses', 8999],
     ['Cat-Eye Sunglasses', 7999],
   ],
+  kids: [
+    ['Rocket Playground Crewneck', 3999],
+    ['Comet Graphic Tee', 2499],
+  ],
+  'kids-baby-toddler': [
+    ['Snuggle Fleece Onesie', 3499],
+    ['First Steps Crib Shoes', 2999],
+  ],
+  'kids-little-kids': [
+    ['Playday Cotton Tee', 1999],
+    ['Recess Jogger Pants', 3999],
+  ],
+  'kids-big-kids': [
+    ['Varsity Graphic Tee', 2499],
+    ['Campus Sport Shorts', 2999],
+  ],
+  'kids-teens': [
+    ['Trendline Graphic Tee', 2499],
+    ['Skate Deck Hoodie', 5999],
+  ],
+  'kids-tops': [
+    ['Playground Cotton Tee', 1999],
+    ['Junior Performance Polo', 3499],
+  ],
+  'kids-hoodies': [
+    ['Galaxy Pullover Hoodie', 5499],
+    ['Sprint Zip-Up Sweatshirt', 4999],
+  ],
+  'kids-jackets': [
+    ['Cloud Puffer Jacket', 7999],
+    ['Dash Windbreaker Jacket', 6499],
+  ],
+  'kids-pants': [
+    ['FlexPlay Jogger Pants', 4499],
+    ['Campus Chino Pants', 4999],
+  ],
+  'kids-shorts': [
+    ['Dash Mesh Shorts', 2999],
+    ['Recess Casual Shorts', 3499],
+  ],
+  'kids-sneakers': [
+    ['Bounce Runner Sneakers', 7499],
+    ['Playground Court Trainers', 6999],
+  ],
+  'kids-boots': [
+    ['Scamp Ankle Boots', 8999],
+    ['Explorer Hiking Boots', 9999],
+  ],
+  'kids-sandals': [
+    ['Splash Slide Sandals', 3499],
+    ['Beachcomber Strap Sandals', 3999],
+  ],
+  'men-running': [
+    ['Tempo Runner Tee', 2999],
+    ['Dash Running Shorts', 3499],
+  ],
+  'men-football': [
+    ['Pitch Football Jersey', 5499],
+    ['Strike Training Pants', 6499],
+  ],
+  'men-basketball': [
+    ['Court Basketball Jersey', 5999],
+    ['Rebound Mesh Shorts', 4999],
+  ],
+  'men-physical-education': [
+    ['Gym Class Crew Tee', 2499],
+    ['Coach Track Pants', 4499],
+  ],
+  'men-skateboarding': [
+    ['Ollie Skate Tee', 2799],
+    ['Grind Cargo Pants', 5999],
+  ],
+  'women-running': [
+    ['Pace Running Tank', 2699],
+    ['Stride Running Leggings', 5499],
+  ],
+  'women-football': [
+    ['Match Football Jersey', 5499],
+    ['Dribble Training Shorts', 4499],
+  ],
+  'women-basketball': [
+    ['Hoop Basketball Jersey', 5699],
+    ['Fast Break Shorts', 4799],
+  ],
+  'women-physical-education': [
+    ['PE Class Racerback Tee', 2599],
+    ['Laps Track Shorts', 3999],
+  ],
+  'women-skateboarding': [
+    ['Kickflip Skate Tee', 2699],
+    ['Bowl Skater Pants', 5899],
+  ],
+  'kids-running': [
+    ['Junior Dash Tee', 1999],
+    ['Playground Run Shorts', 2499],
+  ],
+  'kids-football': [
+    ['Mini Pitch Jersey', 3499],
+    ['Junior Goalie Shorts', 2999],
+  ],
+  'kids-basketball': [
+    ['Little Hoops Jersey', 3499],
+    ['Recess Court Shorts', 2699],
+  ],
+  'kids-physical-education': [
+    ['Gym Day Tee', 1899],
+    ['Classroom Track Pants', 3299],
+  ],
+  'kids-skateboarding': [
+    ['Grom Skate Tee', 2199],
+    ['Board Park Shorts', 2899],
+  ],
   accessories: [
     ['Metro Weekender Bag', 13999],
     ['Sonic Travel Pouch', 2999],
@@ -232,6 +374,32 @@ const SIZED_CATEGORIES = new Set([
   'women-sneakers',
   'women-boots',
   'women-scarves',
+  'kids-tops',
+  'kids-hoodies',
+  'kids-jackets',
+  'kids-pants',
+  'kids-shorts',
+  'kids-sneakers',
+  'kids-boots',
+  'kids-sandals',
+  'kids-teens',
+  'kids-little-kids',
+  'kids-big-kids',
+  'men-running',
+  'men-football',
+  'men-basketball',
+  'men-physical-education',
+  'men-skateboarding',
+  'women-running',
+  'women-football',
+  'women-basketball',
+  'women-physical-education',
+  'women-skateboarding',
+  'kids-running',
+  'kids-football',
+  'kids-basketball',
+  'kids-physical-education',
+  'kids-skateboarding',
 ]);
 
 function slugify(text: string): string {
