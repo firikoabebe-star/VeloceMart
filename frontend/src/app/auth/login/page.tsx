@@ -1,15 +1,37 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/stores/auth-store";
 import { ApiError } from "@/lib/api";
+import type { User } from "@/lib/api";
+
+const AUTH_ROUTES = ["/auth/login", "/auth/register"];
+
+/**
+ * Where to land after a successful sign-in. `?redirect=` is set by AuthGuard and
+ * takes priority, but only same-origin paths are honoured so it cannot be used as
+ * an open redirect (`//evil.com`, `https://evil.com`) or bounce back to the auth
+ * pages in a loop.
+ */
+function postLoginPath(redirect: string | null, user: User | null | undefined) {
+  const isSafeTarget =
+    redirect !== null &&
+    redirect.startsWith("/") &&
+    !redirect.startsWith("//") &&
+    !AUTH_ROUTES.some((route) => redirect.startsWith(route));
+
+  if (isSafeTarget) return redirect;
+  return user?.role === "ADMIN" ? "/admin" : "/account";
+}
 
 function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, user, isAuthenticated, isLoading } = useAuth();
+  const redirect = searchParams.get("redirect");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,9 +41,9 @@ function LoginForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.push(user?.role === "ADMIN" ? "/admin" : "/account");
+      router.replace(postLoginPath(redirect, user));
     }
-  }, [isLoading, isAuthenticated, router, user]);
+  }, [isLoading, isAuthenticated, router, user, redirect]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -44,7 +66,7 @@ function LoginForm() {
     try {
       await login(email, password);
       const loggedUser = useAuthStore.getState().user;
-      router.push(loggedUser?.role === "ADMIN" ? "/admin" : "/account");
+      router.replace(postLoginPath(redirect, loggedUser));
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 401) setApiError("Invalid email or password");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import AdminGuard from "@/features/admin/components/AdminGuard";
+import AuthGuard from "@/features/auth/components/AuthGuard";
 import AdminSidebar from "@/features/admin/components/AdminSidebar";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 
@@ -15,7 +15,7 @@ export default function AdminLayout({
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
 
   return (
-    <AdminGuard>
+    <AuthGuard requireAdmin>
       <div className="flex h-dvh bg-background">
         <AdminSidebar
           isDrawerOpen={isDrawerOpen}
@@ -29,6 +29,6 @@ export default function AdminLayout({
           <main className="flex-1 overflow-auto p-6">{children}</main>
         </div>
       </div>
-    </AdminGuard>
+    </AuthGuard>
   );
 }

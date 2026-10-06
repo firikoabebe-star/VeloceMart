@@ -13,16 +13,27 @@ interface AuthStore {
   setUser: (user: User | null) => void;
 }
 
+/** Shared by concurrent callers (App bootstrap + AuthGuard) so `/auth/me` runs once. */
+let inFlightRefresh: Promise<void> | null = null;
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: undefined,
 
   refreshUser: async () => {
-    try {
-      const user = await api.getMe();
-      set({ user });
-    } catch {
-      set({ user: null });
-    }
+    if (inFlightRefresh) return inFlightRefresh;
+
+    inFlightRefresh = (async () => {
+      try {
+        const user = await api.getMe();
+        set({ user });
+      } catch {
+        set({ user: null });
+      } finally {
+        inFlightRefresh = null;
+      }
+    })();
+
+    return inFlightRefresh;
   },
 
   login: async (email, password) => {
