@@ -28,6 +28,8 @@ export function useAuth() {
   const user = useAuthStore((s) => s.user);
   const login = useAuthStore((s) => s.login);
   const register = useAuthStore((s) => s.register);
+  const verifyEmail = useAuthStore((s) => s.verifyEmail);
+  const resendOtp = useAuthStore((s) => s.resendOtp);
   const logout = useAuthStore((s) => s.logout);
   const refreshUser = useAuthStore((s) => s.refreshUser);
 
@@ -38,6 +40,8 @@ export function useAuth() {
     isAdmin: user?.role === "ADMIN",
     login,
     register,
+    verifyEmail,
+    resendOtp,
     logout,
     refreshUser,
   };

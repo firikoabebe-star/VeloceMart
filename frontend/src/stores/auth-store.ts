@@ -9,6 +9,8 @@ interface AuthStore {
   refreshUser: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
@@ -42,8 +44,20 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   register: async (data) => {
+    // Registration no longer starts a session — the account stays signed out
+    // until the emailed OTP is verified via `verifyEmail`.
     await api.register(data);
+  },
+
+  verifyEmail: async (email, code) => {
+    // The backend sets the session cookies on a successful verification, so a
+    // refresh is all that's needed to turn the new session into a logged-in user.
+    await api.verifyEmail({ email, code });
     await get().refreshUser();
+  },
+
+  resendOtp: async (email) => {
+    await api.resendOtp(email);
   },
 
   logout: async () => {

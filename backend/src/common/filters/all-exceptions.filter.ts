@@ -28,9 +28,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const handled = this.handlePrismaError(exception);
       status = handled.status;
       message = handled.message;
-    } else if (exception instanceof Error) {
-      message = exception.message;
     }
+    // Any other Error is intentionally left as the generic
+    // 'Internal server error': raw messages may contain internal or personal
+    // information and must never be returned to unauthenticated callers.
 
     this.logger.error(
       `${request.method} ${request.url} ${status}`,

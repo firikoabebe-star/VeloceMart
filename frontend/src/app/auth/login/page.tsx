@@ -37,6 +37,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState("");
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -60,6 +61,7 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError("");
+    setUnverifiedEmail("");
     if (!validate()) return;
 
     setIsSubmitting(true);
@@ -69,8 +71,14 @@ function LoginForm() {
       router.replace(postLoginPath(redirect, loggedUser));
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.status === 401) setApiError("Invalid email or password");
-        else setApiError(err.message);
+        if (err.status === 403) {
+          setUnverifiedEmail(email);
+          setApiError("Please verify your email before signing in.");
+        } else if (err.status === 401) {
+          setApiError("Invalid email or password");
+        } else {
+          setApiError(err.message);
+        }
       } else {
         setApiError("An unexpected error occurred");
       }
@@ -111,7 +119,17 @@ function LoginForm() {
           role="alert"
           className="rounded-lg border border-error/20 bg-error/10 p-3 text-sm text-error"
         >
-          {apiError}
+          <p>{apiError}</p>
+          {unverifiedEmail && (
+            <Link
+              href={`/auth/verify-email?email=${encodeURIComponent(
+                unverifiedEmail,
+              )}`}
+              className="mt-2 inline-block font-medium text-accent-strong hover:underline"
+            >
+              Verify your email
+            </Link>
+          )}
         </div>
       )}
 

@@ -21,6 +21,20 @@ export interface RegisterData {
   lastName: string;
 }
 
+export interface RegisterResponse {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: "CUSTOMER" | "ADMIN";
+  emailVerified: boolean;
+  message: string;
+}
+
+export interface MessageResponse {
+  message: string;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -72,23 +86,72 @@ export interface RecentlyViewedProduct {
 
 /* ── Error class ─────────────────────────────────────────── */
 
+export interface ApiErrorOptions {
+  /** True when the request never reached the server (offline, DNS, timeout). */
+  isNetworkError?: boolean;
+}
+
 export class ApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  isNetworkError: boolean;
+  constructor(status: number, message: string, options: ApiErrorOptions = {}) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.isNetworkError = options.isNetworkError ?? false;
   }
 }
 
+/**
+ * Pulls the meaningful message out of the shapes the API may return.
+ *
+ * The backend's exception filter nests `HttpException.getResponse()` inside the
+ * top-level `message` field, so the real text can be one level deeper
+ * (`{ message: { message: "..." } }`) or an array of validation constraint
+ * messages. Plain string responses are supported too. Returns the first usable
+ * string, or `undefined` when none exists.
+ */
+function extractApiMessage(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const message = extractApiMessage(item);
+      if (message) return message;
+    }
+    return undefined;
+  }
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if ("message" in record) {
+      const message = extractApiMessage(record.message);
+      if (message) return message;
+    }
+    if ("error" in record) {
+      return extractApiMessage(record.error);
+    }
+  }
+  return undefined;
+}
+
 function toApiError(err: unknown): ApiError {
-  if (isAxiosError(err) && err.response) {
-    const data = err.response.data;
-    const message =
-      typeof data?.message === "string"
-        ? data.message
-        : `API error ${err.response.status}`;
-    return new ApiError(err.response.status, message);
+  if (isAxiosError(err)) {
+    // No HTTP response means the request never completed — surface it as a
+    // connectivity problem rather than a server error. Cancellations are
+    // deliberately left as a neutral message (callers using AbortSignal skip
+    // this path entirely).
+    if (!err.response) {
+      return new ApiError(0, "Unable to connect.", {
+        isNetworkError: true,
+      });
+    }
+    const { status, data } = err.response;
+    return new ApiError(
+      status,
+      extractApiMessage(data) ?? `API error ${status}`,
+    );
   }
   return new ApiError(500, "An unexpected error occurred");
 }
@@ -249,10 +312,36 @@ export async function login(data: {
   }
 }
 
-export async function register(data: RegisterData): Promise<User> {
+export async function register(data: RegisterData): Promise<RegisterResponse> {
   try {
-    const { data: res } = await api.post<User>("/auth/register", data);
+    const { data: res } = await api.post<RegisterResponse>(
+      "/auth/register",
+      data,
+    );
     return res;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function verifyEmail(data: {
+  email: string;
+  code: string;
+}): Promise<User> {
+  try {
+    const { data: res } = await api.post<User>("/auth/verify-email", data);
+    return res;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function resendOtp(email: string): Promise<MessageResponse> {
+  try {
+    const { data } = await api.post<MessageResponse>("/auth/resend-otp", {
+      email,
+    });
+    return data;
   } catch (err) {
     throw toApiError(err);
   }

@@ -28,7 +28,13 @@ export function setOnAuthFailure(cb: () => void) {
   onAuthFailure = cb;
 }
 
-const SKIP_REFRESH_URLS = ["/auth/login", "/auth/register", "/auth/refresh"];
+const SKIP_REFRESH_URLS = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/verify-email",
+  "/auth/resend-otp",
+  "/auth/refresh",
+];
 
 api.interceptors.response.use(
   (response) => response,

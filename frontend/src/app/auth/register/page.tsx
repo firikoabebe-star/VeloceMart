@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useAuthStore } from "@/stores/auth-store";
 import { ApiError } from "@/lib/api";
 
 export default function RegisterPage() {
@@ -52,8 +51,9 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     try {
       await register({ firstName, lastName, email, password });
-      const registeredUser = useAuthStore.getState().user;
-      router.push(registeredUser?.role === "ADMIN" ? "/admin" : "/account");
+      // Registration leaves the user signed out until the emailed OTP is
+      // verified. Send them to the verification screen with their email prefilled.
+      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 409) setApiError("Email already registered");
