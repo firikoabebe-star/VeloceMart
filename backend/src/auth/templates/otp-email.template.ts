@@ -1,10 +1,24 @@
-export function otpEmailTemplate(code: string): string {
+interface OtpEmailContent {
+  code: string;
+  title: string;
+  heading: string;
+  intro: string;
+  footer: string;
+}
+
+function otpEmailDocument({
+  code,
+  title,
+  heading,
+  intro,
+  footer,
+}: OtpEmailContent): string {
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify your VeloceMart account</title>
+    <title>${title}</title>
   </head>
   <body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:32px 16px;">
@@ -13,13 +27,13 @@ export function otpEmailTemplate(code: string): string {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
             <tr>
               <td style="padding:32px 40px 8px;text-align:center;">
-                <h1 style="margin:0;font-size:22px;line-height:1.3;color:#111827;">Verify your email</h1>
+                <h1 style="margin:0;font-size:22px;line-height:1.3;color:#111827;">${heading}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:8px 40px 0;text-align:center;">
                 <p style="margin:0;font-size:15px;line-height:1.6;color:#4b5563;">
-                  Use the code below to confirm your VeloceMart account.
+                  ${intro}
                 </p>
               </td>
             </tr>
@@ -40,7 +54,7 @@ export function otpEmailTemplate(code: string): string {
             <tr>
               <td style="padding:20px 40px 32px;border-top:1px solid #f0f0f1;text-align:center;">
                 <p style="margin:0;font-size:13px;line-height:1.6;color:#9ca3af;">
-                  If you didn't create a VeloceMart account, you can safely ignore this email.
+                  ${footer}
                 </p>
               </td>
             </tr>
@@ -51,4 +65,26 @@ export function otpEmailTemplate(code: string): string {
     </table>
   </body>
 </html>`;
+}
+
+export function otpEmailTemplate(code: string): string {
+  return otpEmailDocument({
+    code,
+    title: 'Verify your VeloceMart account',
+    heading: 'Verify your email',
+    intro: 'Use the code below to confirm your VeloceMart account.',
+    footer:
+      "If you didn't create a VeloceMart account, you can safely ignore this email.",
+  });
+}
+
+export function passwordResetEmailTemplate(code: string): string {
+  return otpEmailDocument({
+    code,
+    title: 'Reset your VeloceMart password',
+    heading: 'Reset your password',
+    intro: 'Use the code below to reset your VeloceMart password.',
+    footer:
+      "If you didn't request a password reset, you can safely ignore this email.",
+  });
 }

@@ -347,6 +347,33 @@ export async function resendOtp(email: string): Promise<MessageResponse> {
   }
 }
 
+export async function forgotPassword(email: string): Promise<MessageResponse> {
+  try {
+    const { data } = await api.post<MessageResponse>("/auth/forgot-password", {
+      email,
+    });
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function resetPassword(data: {
+  email: string;
+  code: string;
+  newPassword: string;
+}): Promise<MessageResponse> {
+  try {
+    const { data: res } = await api.post<MessageResponse>(
+      "/auth/reset-password",
+      data,
+    );
+    return res;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
 export async function getMe(): Promise<User> {
   try {
     const { data } = await api.get<User>("/auth/me");

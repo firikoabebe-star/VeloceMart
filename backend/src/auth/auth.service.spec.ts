@@ -25,10 +25,13 @@ jest.mock('bcryptjs', () => ({
   },
 }));
 
+type OtpPurposeValue = 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+
 type OtpRecord = {
   id: string;
   userId: string;
   code: string;
+  purpose: OtpPurposeValue;
   expiresAt: Date;
   used: boolean;
   createdAt: Date;
@@ -42,6 +45,7 @@ type UserRecord = {
   lastName: string;
   role: string;
   emailVerified: boolean;
+  tokenVersion: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -55,6 +59,7 @@ function makeUser(overrides: Partial<UserRecord> = {}): UserRecord {
     lastName: 'User',
     role: 'CUSTOMER',
     emailVerified: false,
+    tokenVersion: 0,
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     updatedAt: new Date('2026-01-01T00:00:00.000Z'),
     ...overrides,
@@ -66,6 +71,7 @@ function makeOtp(overrides: Partial<OtpRecord> = {}): OtpRecord {
     id: 'otp-1',
     userId: 'user-1',
     code: '123456',
+    purpose: 'EMAIL_VERIFICATION',
     expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     used: false,
     createdAt: new Date(),
@@ -84,12 +90,13 @@ function createPrismaMock(
   const matches = (otp: OtpRecord, where: Partial<OtpRecord>): boolean =>
     (where.id === undefined || otp.id === where.id) &&
     (where.userId === undefined || otp.userId === where.userId) &&
-    (where.used === undefined || otp.used === where.used);
+    (where.used === undefined || otp.used === where.used) &&
+    (where.purpose === undefined || otp.purpose === where.purpose);
 
   const emailOtp = {
     findFirst: jest.fn(
       (args: {
-        where: { userId: string; used?: boolean };
+        where: { userId: string; used?: boolean; purpose?: OtpPurposeValue };
         orderBy?: unknown;
       }): Promise<OtpRecord | null> => {
         const found = otps
@@ -100,7 +107,12 @@ function createPrismaMock(
     ),
     updateMany: jest.fn(
       (args: {
-        where: { id?: string; userId?: string; used?: boolean };
+        where: {
+          id?: string;
+          userId?: string;
+          used?: boolean;
+          purpose?: OtpPurposeValue;
+        };
         data: { used: boolean };
       }): Promise<{ count: number }> => {
         let count = 0;
@@ -115,7 +127,12 @@ function createPrismaMock(
     ),
     create: jest.fn(
       (args: {
-        data: { userId: string; code: string; expiresAt: Date };
+        data: {
+          userId: string;
+          code: string;
+          expiresAt: Date;
+          purpose: OtpPurposeValue;
+        };
       }): Promise<OtpRecord> => {
         otpSeq += 1;
         const otp: OtpRecord = {
@@ -165,7 +182,9 @@ function createPrismaMock(
     update: jest.fn(
       (args: {
         where: { id: string };
-        data: Partial<UserRecord>;
+        data: Partial<UserRecord> & {
+          tokenVersion?: number | { increment: number };
+        };
       }): Promise<UserRecord> => {
         const target = users.find(
           (candidate) => candidate.id === args.where.id,
@@ -173,7 +192,13 @@ function createPrismaMock(
         if (!target) {
           throw new Error('User not found');
         }
-        Object.assign(target, args.data);
+        const { tokenVersion, ...rest } = args.data;
+        Object.assign(target, rest);
+        if (typeof tokenVersion === 'number') {
+          target.tokenVersion = tokenVersion;
+        } else if (tokenVersion && 'increment' in tokenVersion) {
+          target.tokenVersion += tokenVersion.increment;
+        }
         return Promise.resolve(target);
       },
     ),
@@ -228,7 +253,7 @@ function createPrismaMock(
 
 describe('AuthService', () => {
   let service: AuthService;
-  let email: { sendOtpEmail: jest.Mock };
+  let email: { sendOtpEmail: jest.Mock; sendPasswordResetEmail: jest.Mock };
   let res: { cookie: jest.Mock; clearCookie: jest.Mock };
   let prismaMock: ReturnType<typeof createPrismaMock>;
 
@@ -237,7 +262,10 @@ describe('AuthService', () => {
     otps: OtpRecord[] = [],
   ): Promise<void> => {
     prismaMock = createPrismaMock(users, otps);
-    email = { sendOtpEmail: jest.fn().mockResolvedValue(undefined) };
+    email = {
+      sendOtpEmail: jest.fn().mockResolvedValue(undefined),
+      sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
+    };
     res = { cookie: jest.fn(), clearCookie: jest.fn() };
 
     const moduleRef = await Test.createTestingModule({
@@ -481,6 +509,51 @@ describe('AuthService', () => {
       expect(prismaMock.otps[0].used).toBe(false);
     });
 
+    it('does not accept a password-reset code for email verification', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '654321', purpose: 'PASSWORD_RESET' })],
+      );
+
+      await expect(
+        service.verifyEmail(
+          { email: 'user@example.com', code: '654321' },
+          res as unknown as Response,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prismaMock.otps[0].used).toBe(false);
+      expect(prismaMock.users[0].emailVerified).toBe(false);
+      expect(res.cookie).not.toHaveBeenCalled();
+    });
+
+    it('sets httpOnly cookies with a root refresh path so refresh honours the "api" prefix', async () => {
+      await build([makeUser()], [makeOtp({ code: '654321' })]);
+
+      await service.verifyEmail(
+        { email: 'user@example.com', code: '654321' },
+        res as unknown as Response,
+      );
+
+      const cookieMock = res.cookie as jest.Mock<
+        unknown,
+        [string, string, Record<string, unknown>]
+      >;
+      const cookieCalls: Array<[string, string, Record<string, unknown>]> = [];
+      for (const name of ['access_token', 'refresh_token'] as const) {
+        const found = cookieMock.mock.calls.find((call) => call[0] === name);
+        expect(found).toBeDefined();
+        if (found) {
+          cookieCalls.push(found);
+        }
+      }
+
+      expect(cookieCalls).toHaveLength(2);
+      for (const [, , options] of cookieCalls) {
+        expect(options.path).toBe('/');
+        expect(options.httpOnly).toBe(true);
+      }
+    });
+
     it('rejects an expired code', async () => {
       await build(
         [makeUser()],
@@ -641,6 +714,205 @@ describe('AuthService', () => {
       const unused = prismaMock.otps.filter((otp) => !otp.used);
       expect(unused).toHaveLength(1);
       expect(email.sendOtpEmail).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('returns a generic message for unknown accounts without sending email', async () => {
+      await build();
+
+      const result = await service.forgotPassword({
+        email: 'ghost@example.com',
+      });
+
+      expect(result.message).toContain('If an account');
+      expect(email.sendPasswordResetEmail).not.toHaveBeenCalled();
+      expect(prismaMock.otps).toHaveLength(0);
+    });
+
+    it('issues a PASSWORD_RESET code and emails it for known accounts', async () => {
+      await build([makeUser()]);
+
+      const result = await service.forgotPassword({
+        email: 'user@example.com',
+      });
+
+      expect(result.message).toContain('If an account');
+      expect(prismaMock.otps).toHaveLength(1);
+      expect(prismaMock.otps[0].purpose).toBe('PASSWORD_RESET');
+      expect(email.sendPasswordResetEmail).toHaveBeenCalledWith(
+        'user@example.com',
+        expect.stringMatching(/^\d{6}$/),
+      );
+    });
+
+    it('does not invalidate a pending email-verification code', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '111111', purpose: 'EMAIL_VERIFICATION' })],
+      );
+
+      await service.forgotPassword({ email: 'user@example.com' });
+
+      const emailOtp = prismaMock.otps.find(
+        (otp) => otp.purpose === 'EMAIL_VERIFICATION',
+      );
+      expect(emailOtp?.used).toBe(false);
+      expect(
+        prismaMock.otps.filter((otp) => otp.purpose === 'PASSWORD_RESET'),
+      ).toHaveLength(1);
+    });
+
+    it('invalidates the previous reset code when a new one is requested', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '111111', purpose: 'PASSWORD_RESET' })],
+      );
+
+      await service.forgotPassword({ email: 'user@example.com' });
+
+      const reset = prismaMock.otps.filter(
+        (otp) => otp.purpose === 'PASSWORD_RESET',
+      );
+      expect(reset).toHaveLength(2);
+      expect(reset.find((otp) => otp.used)?.code).toBe('111111');
+      const active = reset.find((otp) => !otp.used);
+      expect(active?.code).not.toBe('111111');
+    });
+
+    it('stays generic and logs safely when reset email delivery fails', async () => {
+      await build([makeUser()]);
+      email.sendPasswordResetEmail.mockRejectedValueOnce(
+        Object.assign(
+          new Error('Resend rejected user@example.com: Invalid to field'),
+          { name: 'validation_error' },
+        ),
+      );
+
+      const result = await service.forgotPassword({
+        email: 'user@example.com',
+      });
+
+      expect(result.message).toContain('If an account');
+      const logged = (Logger.prototype.error as jest.Mock).mock.calls
+        .map((call: unknown[]) => call.join(' '))
+        .join(' ');
+      expect(logged).not.toContain('user@example.com');
+      expect(logged).not.toContain('Invalid to field');
+    });
+  });
+
+  describe('resetPassword', () => {
+    const reset = {
+      email: 'user@example.com',
+      code: '222222',
+      newPassword: 'NewPassword1',
+    };
+
+    it('resets the password, consumes the code, bumps tokenVersion and clears cookies', async () => {
+      await build(
+        [makeUser({ tokenVersion: 2 })],
+        [makeOtp({ code: '222222', purpose: 'PASSWORD_RESET' })],
+      );
+
+      const result = await service.resetPassword(
+        reset,
+        res as unknown as Response,
+      );
+
+      expect(result.message).toContain('Password reset successful');
+      expect(prismaMock.users[0].password).toBe('hashed:NewPassword1');
+      expect(prismaMock.users[0].tokenVersion).toBe(3);
+      expect(prismaMock.otps[0].used).toBe(true);
+      expect(res.clearCookie).toHaveBeenCalledWith(
+        'access_token',
+        expect.any(Object),
+      );
+      expect(res.clearCookie).toHaveBeenCalledWith(
+        'refresh_token',
+        expect.any(Object),
+      );
+    });
+
+    it('rejects unknown accounts with a generic invalid-code error', async () => {
+      await build();
+
+      await expect(
+        service.resetPassword(reset, res as unknown as Response),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(res.clearCookie).not.toHaveBeenCalled();
+    });
+
+    it('rejects a wrong code', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '222222', purpose: 'PASSWORD_RESET' })],
+      );
+
+      await expect(
+        service.resetPassword(
+          { ...reset, code: '333333' },
+          res as unknown as Response,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prismaMock.otps[0].used).toBe(false);
+      expect(prismaMock.users[0].tokenVersion).toBe(0);
+    });
+
+    it('rejects an already-used code with a clear message', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '222222', purpose: 'PASSWORD_RESET', used: true })],
+      );
+
+      await expect(
+        service.resetPassword(reset, res as unknown as Response),
+      ).rejects.toThrow('already been used');
+      expect(res.clearCookie).not.toHaveBeenCalled();
+    });
+
+    it('rejects an expired code with a clear message', async () => {
+      await build(
+        [makeUser()],
+        [
+          makeOtp({
+            code: '222222',
+            purpose: 'PASSWORD_RESET',
+            expiresAt: new Date(Date.now() - 1000),
+          }),
+        ],
+      );
+
+      await expect(
+        service.resetPassword(reset, res as unknown as Response),
+      ).rejects.toThrow('expired');
+    });
+
+    it('does not accept an email-verification code', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '222222', purpose: 'EMAIL_VERIFICATION' })],
+      );
+
+      await expect(
+        service.resetPassword(reset, res as unknown as Response),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('lets only one of two concurrent resets succeed', async () => {
+      await build(
+        [makeUser()],
+        [makeOtp({ code: '222222', purpose: 'PASSWORD_RESET' })],
+      );
+
+      const results = await Promise.allSettled([
+        service.resetPassword(reset, res as unknown as Response),
+        service.resetPassword(reset, res as unknown as Response),
+      ]);
+
+      expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
+      expect(results.filter((r) => r.status === 'rejected')).toHaveLength(1);
+      expect(prismaMock.users[0].tokenVersion).toBe(1);
     });
   });
 

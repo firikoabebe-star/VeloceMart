@@ -43,6 +43,8 @@ describe('AuthController registration throttling', () => {
             register,
             resendOtp: jest.fn().mockResolvedValue({ message: 'ok' }),
             verifyEmail: jest.fn().mockResolvedValue({}),
+            forgotPassword: jest.fn().mockResolvedValue({ message: 'ok' }),
+            resetPassword: jest.fn().mockResolvedValue({ message: 'ok' }),
           },
         },
       ],
@@ -96,5 +98,35 @@ describe('AuthController registration throttling', () => {
 
     expect(response.body).toMatchObject({ email: 'new@example.com' });
     expect(register).toHaveBeenCalledTimes(1);
+  });
+
+  it('rate-limits forgot-password per normalized email', async () => {
+    const postForgot = (email: string) =>
+      request(app.getHttpServer() as Server)
+        .post('/auth/forgot-password')
+        .send({ email });
+
+    for (let i = 0; i < 3; i += 1) {
+      await postForgot('Reset@Example.com').expect(200);
+    }
+
+    await postForgot('  reset@example.com  ').expect(429);
+  });
+
+  it('rate-limits reset-password requests', async () => {
+    const postReset = () =>
+      request(app.getHttpServer() as Server)
+        .post('/auth/reset-password')
+        .send({
+          email: 'reset@example.com',
+          code: '123456',
+          newPassword: 'NewPassword1',
+        });
+
+    for (let i = 0; i < 5; i += 1) {
+      await postReset().expect(200);
+    }
+
+    await postReset().expect(429);
   });
 });

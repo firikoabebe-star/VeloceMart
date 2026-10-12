@@ -36,6 +36,19 @@ describe('EmailService', () => {
     expect(String(payload.html)).toContain('123456');
   });
 
+  it('sends the password reset email through Resend', async () => {
+    mockSend.mockResolvedValue({ data: { id: 'email-2' }, error: null });
+
+    await service.sendPasswordResetEmail('user@example.com', '654321');
+
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    const [payload] = mockSend.mock.calls[0];
+    expect(payload.from).toBe('VeloceMart <no-reply@example.com>');
+    expect(payload.to).toBe('user@example.com');
+    expect(payload.subject).toBe('Reset your VeloceMart password');
+    expect(String(payload.html)).toContain('654321');
+  });
+
   it('throws a generic error and logs without recipient PII on provider failure', async () => {
     const errorSpy = jest
       .spyOn(Logger.prototype, 'error')

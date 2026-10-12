@@ -12,10 +12,13 @@ import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
 import type { Response } from 'express';
+import { OtpPurpose } from '../../generated/prisma';
 import { PrismaService } from '../common/prisma/prisma.service.js';
+import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { ResendOtpDto } from './dto/resend-otp.dto.js';
+import { ResetPasswordDto } from './dto/reset-password.dto.js';
 import { VerifyEmailDto } from './dto/verify-email.dto.js';
 import { EmailService } from './email.service.js';
 import type { JwtPayload } from './interfaces/jwt-payload.interface.js';
@@ -67,7 +70,7 @@ export class AuthService {
     // failure is reported as a retryable, provider-agnostic error.
     let code: string;
     try {
-      code = await this.createOtp(user.id);
+      code = await this.createOtp(user.id, OtpPurpose.EMAIL_VERIFICATION);
     } catch (error) {
       this.logger.error(
         `Registration OTP persistence failed (${this.safeErrorName(error)})`,
@@ -115,7 +118,11 @@ export class AuthService {
     }
 
     const otp = await this.prisma.emailOtp.findFirst({
-      where: { userId: user.id, used: false },
+      where: {
+        userId: user.id,
+        used: false,
+        purpose: OtpPurpose.EMAIL_VERIFICATION,
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -148,6 +155,7 @@ export class AuthService {
       updatedUser.id,
       updatedUser.email,
       updatedUser.role,
+      updatedUser.tokenVersion,
     );
 
     return {
@@ -177,7 +185,7 @@ export class AuthService {
     // can always retry without database or operator intervention.
     let code: string;
     try {
-      code = await this.createOtp(user.id);
+      code = await this.createOtp(user.id, OtpPurpose.EMAIL_VERIFICATION);
     } catch (error) {
       this.logger.error(
         `Resend OTP persistence failed (${this.safeErrorName(error)})`,
@@ -194,6 +202,99 @@ export class AuthService {
     }
 
     return { message };
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto) {
+    // Always the same response: an attacker must not be able to tell whether an
+    // email is registered from the status, body, or timing-independent message.
+    const message =
+      'If an account with that email exists, a password reset code has been sent.';
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (!user) {
+      return { message };
+    }
+
+    let code: string;
+    try {
+      code = await this.createOtp(user.id, OtpPurpose.PASSWORD_RESET);
+    } catch (error) {
+      this.logger.error(
+        `Password reset OTP persistence failed (${this.safeErrorName(error)})`,
+      );
+      return { message };
+    }
+
+    try {
+      await this.emailService.sendPasswordResetEmail(user.email, code);
+    } catch (error) {
+      this.logger.error(
+        `Password reset OTP delivery failed (${this.safeErrorName(error)})`,
+      );
+    }
+
+    return { message };
+  }
+
+  async resetPassword(dto: ResetPasswordDto, res: Response) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    const otp = await this.prisma.emailOtp.findFirst({
+      where: { userId: user.id, purpose: OtpPurpose.PASSWORD_RESET },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Checked in a deliberate order so the client gets a clear, specific
+    // reason without those reasons revealing whether the account exists.
+    if (!otp || otp.code !== dto.code) {
+      throw new BadRequestException('Invalid verification code');
+    }
+    if (otp.used) {
+      throw new BadRequestException('Verification code has already been used');
+    }
+    if (otp.expiresAt < new Date()) {
+      throw new BadRequestException('Verification code has expired');
+    }
+
+    const hashed = await bcrypt.hash(dto.newPassword, SALT_ROUNDS);
+
+    await this.prisma.$transaction(async (tx) => {
+      const claimed = await tx.emailOtp.updateMany({
+        where: { id: otp.id, used: false },
+        data: { used: true },
+      });
+
+      if (claimed.count === 0) {
+        throw new BadRequestException(
+          'Verification code has already been used',
+        );
+      }
+
+      // Bumping tokenVersion invalidates every previously issued access and
+      // refresh token for this user, forcing a fresh login on all devices.
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashed,
+          tokenVersion: { increment: 1 },
+        },
+      });
+    });
+
+    // Also log out the device that performed the reset.
+    this.clearTokenCookies(res);
+
+    return {
+      message:
+        'Password reset successful. Please log in with your new password.',
+    };
   }
 
   async login(dto: LoginDto, res: Response) {
@@ -215,7 +316,13 @@ export class AuthService {
       );
     }
 
-    this.setTokenCookies(res, user.id, user.email, user.role);
+    this.setTokenCookies(
+      res,
+      user.id,
+      user.email,
+      user.role,
+      user.tokenVersion,
+    );
 
     return {
       id: user.id,
@@ -226,8 +333,14 @@ export class AuthService {
     };
   }
 
-  refresh(userId: string, email: string, role: string, res: Response) {
-    this.setTokenCookies(res, userId, email, role);
+  refresh(
+    userId: string,
+    email: string,
+    role: string,
+    tokenVersion: number,
+    res: Response,
+  ) {
+    this.setTokenCookies(res, userId, email, role, tokenVersion);
     return { message: 'Tokens refreshed' };
   }
 
@@ -252,24 +365,30 @@ export class AuthService {
     return { message: 'Logged out' };
   }
 
-  private async createOtp(userId: string): Promise<string> {
+  private async createOtp(
+    userId: string,
+    purpose: OtpPurpose,
+  ): Promise<string> {
     const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
     const expiresAt = new Date(Date.now() + OTP_EXPIRY_MS);
 
     await this.prisma.$transaction(async (tx) => {
       // Lock the user row for the duration of the transaction so concurrent
-      // OTP issuance (register vs. resend, or two resends) is serialized.
+      // OTP issuance (register vs. resend, or two resets) is serialized.
       // The second transaction then invalidates the first's unused code
       // before inserting its own, guaranteeing at most one unused code.
       await tx.$queryRaw`SELECT id FROM users WHERE id = ${userId} FOR UPDATE`;
 
+      // Only codes for the same purpose are invalidated, so requesting a
+      // password reset never cancels a pending email-verification code (or
+      // vice versa).
       await tx.emailOtp.updateMany({
-        where: { userId, used: false },
+        where: { userId, used: false, purpose },
         data: { used: true },
       });
 
       await tx.emailOtp.create({
-        data: { userId, code, expiresAt },
+        data: { userId, code, expiresAt, purpose },
       });
     });
 
@@ -293,11 +412,13 @@ export class AuthService {
     sub: string,
     email: string,
     role: string,
+    tokenVersion: number,
   ) {
     const payload: JwtPayload = {
       sub,
       email,
       role: role as JwtPayload['role'],
+      ver: tokenVersion,
     };
 
     const accessToken = this.jwt.sign(payload, {
@@ -325,7 +446,10 @@ export class AuthService {
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/auth/refresh',
+      // The route lives under the global "api" prefix, so a cookie scoped to
+      // "/auth/refresh" would never be sent to "/api/auth/refresh". Use "/" so
+      // the refresh cookie honours the configured base path.
+      path: '/',
     });
   }
 
@@ -340,7 +464,7 @@ export class AuthService {
     });
 
     res.clearCookie('refresh_token', {
-      path: '/auth/refresh',
+      path: '/',
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',

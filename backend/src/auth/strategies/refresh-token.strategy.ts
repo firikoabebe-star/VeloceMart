@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PrismaService } from '../../common/prisma/prisma.service.js';
 import type { Request } from 'express';
 import type { JwtPayload } from '../interfaces/jwt-payload.interface.js';
 
@@ -10,7 +11,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => req?.cookies?.['refresh_token'] as string | null,
@@ -21,14 +25,34 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  validate(
+  async validate(
     req: Request,
     payload: JwtPayload,
-  ): { sub: string; email: string; role: string } {
+  ): Promise<{
+    sub: string;
+    email: string;
+    role: string;
+    ver: number;
+  }> {
     const refreshToken = req?.cookies?.['refresh_token'] as string | undefined;
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token missing');
     }
-    return { sub: payload.sub, email: payload.email, role: payload.role };
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { id: true, email: true, role: true, tokenVersion: true },
+    });
+
+    if (!user || user.tokenVersion !== payload.ver) {
+      throw new UnauthorizedException('Session expired, please log in again');
+    }
+
+    return {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      ver: user.tokenVersion,
+    };
   }
 }

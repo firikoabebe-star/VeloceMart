@@ -23,9 +23,11 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { JwtRefreshGuard } from '../common/guards/jwt-refresh.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
 import { AuthService } from './auth.service.js';
+import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { ResendOtpDto } from './dto/resend-otp.dto.js';
+import { ResetPasswordDto } from './dto/reset-password.dto.js';
 import { VerifyEmailDto } from './dto/verify-email.dto.js';
 import type { AuthenticatedRequest } from './interfaces/authenticated-request.interface.js';
 
@@ -84,6 +86,45 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
+  @Throttle({
+    default: { limit: 5, ttl: 60_000 },
+    email: { limit: 3, ttl: 60_000 },
+  })
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Request a password reset code by email' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Generic confirmation; a reset code is emailed if the account exists',
+  })
+  @ApiResponse({ status: 429, description: 'Too many requests' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
+  @Throttle({
+    default: { limit: 5, ttl: 60_000 },
+    email: { limit: 5, ttl: 60_000 },
+  })
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset a password with a 6-digit email code' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset, all sessions invalidated',
+  })
+  @ApiResponse({ status: 400, description: 'Invalid, expired or used code' })
+  @ApiResponse({ status: 429, description: 'Too many requests' })
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.resetPassword(dto, res);
+  }
+
+  @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
   @ApiResponse({ status: 200, description: 'Login successful, sets cookies' })
@@ -110,6 +151,7 @@ export class AuthController {
       req.user.sub,
       req.user.email,
       req.user.role,
+      req.user.ver,
       res,
     );
   }

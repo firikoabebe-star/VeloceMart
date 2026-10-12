@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
-import { otpEmailTemplate } from './templates/otp-email.template.js';
+import {
+  otpEmailTemplate,
+  passwordResetEmailTemplate,
+} from './templates/otp-email.template.js';
 
 @Injectable()
 export class EmailService {
@@ -21,21 +24,42 @@ export class EmailService {
   }
 
   async sendOtpEmail(to: string, code: string): Promise<void> {
+    await this.deliver(
+      to,
+      'Your VeloceMart verification code',
+      otpEmailTemplate(code),
+      'OTP',
+    );
+  }
+
+  async sendPasswordResetEmail(to: string, code: string): Promise<void> {
+    await this.deliver(
+      to,
+      'Reset your VeloceMart password',
+      passwordResetEmailTemplate(code),
+      'password reset',
+    );
+  }
+
+  private async deliver(
+    to: string,
+    subject: string,
+    html: string,
+    label: string,
+  ): Promise<void> {
     try {
       const { error } = await this.resend.emails.send({
         from: this.fromEmail,
         to,
-        subject: 'Your VeloceMart verification code',
-        html: otpEmailTemplate(code),
+        subject,
+        html,
       });
 
       if (error) {
         this.logger.error(
-          `Failed to send OTP email (provider error: ${this.safeErrorName(error)})`,
+          `Failed to send ${label} email (provider error: ${this.safeErrorName(error)})`,
         );
-        throw new InternalServerErrorException(
-          'Failed to send verification email',
-        );
+        throw new InternalServerErrorException('Failed to send email');
       }
     } catch (error) {
       // Already sanitized above: rethrow without logging the raw payload again.
@@ -45,11 +69,9 @@ export class EmailService {
       // Wrap transport/network failures so provider details never reach the
       // caller and only a bounded error category is logged.
       this.logger.error(
-        `Failed to send OTP email (transport error: ${this.safeErrorName(error)})`,
+        `Failed to send ${label} email (transport error: ${this.safeErrorName(error)})`,
       );
-      throw new InternalServerErrorException(
-        'Failed to send verification email',
-      );
+      throw new InternalServerErrorException('Failed to send email');
     }
   }
 

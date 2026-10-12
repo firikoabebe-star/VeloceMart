@@ -30,6 +30,8 @@ export function useAuth() {
   const register = useAuthStore((s) => s.register);
   const verifyEmail = useAuthStore((s) => s.verifyEmail);
   const resendOtp = useAuthStore((s) => s.resendOtp);
+  const forgotPassword = useAuthStore((s) => s.forgotPassword);
+  const resetPassword = useAuthStore((s) => s.resetPassword);
   const logout = useAuthStore((s) => s.logout);
   const refreshUser = useAuthStore((s) => s.refreshUser);
 
@@ -42,6 +44,8 @@ export function useAuth() {
     register,
     verifyEmail,
     resendOtp,
+    forgotPassword,
+    resetPassword,
     logout,
     refreshUser,
   };

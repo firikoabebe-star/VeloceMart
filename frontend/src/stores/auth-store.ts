@@ -11,6 +11,12 @@ interface AuthStore {
   register: (data: RegisterData) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<void>;
   resendOtp: (email: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (data: {
+    email: string;
+    code: string;
+    newPassword: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
@@ -58,6 +64,18 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   resendOtp: async (email) => {
     await api.resendOtp(email);
+  },
+
+  forgotPassword: async (email) => {
+    await api.forgotPassword(email);
+  },
+
+  resetPassword: async (data) => {
+    // The backend consumes the code, bumps tokenVersion (invalidating every
+    // existing access/refresh token) and clears this device's cookies. Mirror
+    // that by dropping any local session instead of logging the user in.
+    await api.resetPassword(data);
+    set({ user: null });
   },
 
   logout: async () => {

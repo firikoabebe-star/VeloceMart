@@ -15,6 +15,13 @@ enum Role {
   @@map("roles")
 }
 
+enum OtpPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+
+  @@map("otp_purpose")
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
@@ -23,6 +30,7 @@ model User {
   lastName      String
   role          Role     @default(CUSTOMER)
   emailVerified Boolean  @default(false) @map("email_verified")
+  tokenVersion  Int      @default(0) @map("token_version")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -36,12 +44,13 @@ model User {
 }
 
 model EmailOtp {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
+  id        String     @id @default(uuid())
+  userId    String     @map("user_id")
   code      String
-  expiresAt DateTime @map("expires_at")
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
+  purpose   OtpPurpose @default(EMAIL_VERIFICATION)
+  expiresAt DateTime   @map("expires_at")
+  used      Boolean    @default(false)
+  createdAt DateTime   @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

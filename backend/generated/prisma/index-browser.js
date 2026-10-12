@@ -128,6 +128,7 @@ exports.Prisma.UserScalarFieldEnum = {
   lastName: 'lastName',
   role: 'role',
   emailVerified: 'emailVerified',
+  tokenVersion: 'tokenVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -136,6 +137,7 @@ exports.Prisma.EmailOtpScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   code: 'code',
+  purpose: 'purpose',
   expiresAt: 'expiresAt',
   used: 'used',
   createdAt: 'createdAt'
@@ -255,6 +257,11 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   CUSTOMER: 'CUSTOMER',
   ADMIN: 'ADMIN'
+};
+
+exports.OtpPurpose = exports.$Enums.OtpPurpose = {
+  EMAIL_VERIFICATION: 'EMAIL_VERIFICATION',
+  PASSWORD_RESET: 'PASSWORD_RESET'
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {

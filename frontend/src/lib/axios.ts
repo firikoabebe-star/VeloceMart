@@ -33,6 +33,8 @@ const SKIP_REFRESH_URLS = [
   "/auth/register",
   "/auth/verify-email",
   "/auth/resend-otp",
+  "/auth/forgot-password",
+  "/auth/reset-password",
   "/auth/refresh",
 ];
 
