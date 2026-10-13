@@ -17,6 +17,7 @@ import { UploadModule } from './upload/upload.module.js';
 import { UsersModule } from './users/users.module.js';
 import { WishlistModule } from './wishlist/wishlist.module.js';
 import { AddressesModule } from './addresses/addresses.module.js';
+import { ContactModule } from './contact/contact.module.js';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AddressesModule } from './addresses/addresses.module.js';
     UsersModule,
     WishlistModule,
     AddressesModule,
+    ContactModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

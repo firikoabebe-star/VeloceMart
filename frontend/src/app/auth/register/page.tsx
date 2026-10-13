@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ApiError } from "@/lib/api";
+import { getGoogleSignInErrorMessage } from "@/features/auth/error-messages";
+import AuthDivider from "@/features/auth/components/AuthDivider";
+import GoogleSignInButton from "@/features/auth/components/GoogleSignInButton";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { register, user, isAuthenticated, isLoading } = useAuth();
 
   const [firstName, setFirstName] = useState("");
@@ -17,13 +22,26 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState("");
+  const [oauthError, setOauthError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const clearedOauthError = useRef(false);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.push(user?.role === "ADMIN" ? "/admin" : "/account");
     }
   }, [isLoading, isAuthenticated, router, user]);
+
+  // The Google callback can redirect here with `?error=<code>`. Map the code
+  // to friendly copy once, then strip it from the URL so a refresh can't show
+  // a stale error.
+  useEffect(() => {
+    const code = searchParams.get("error");
+    if (!code || clearedOauthError.current) return;
+    clearedOauthError.current = true;
+    setOauthError(getGoogleSignInErrorMessage(code));
+    router.replace(pathname);
+  }, [searchParams, pathname, router]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -46,6 +64,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError("");
+    setOauthError("");
     if (!validate()) return;
 
     setIsSubmitting(true);
@@ -56,8 +75,7 @@ export default function RegisterPage() {
       router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.status === 409) setApiError("Email already registered");
-        else setApiError(err.message);
+        setApiError(err.message);
       } else {
         setApiError("An unexpected error occurred");
       }
@@ -93,14 +111,17 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      {apiError && (
+      {(apiError || oauthError) && (
         <div
           role="alert"
           className="rounded-lg border border-error/20 bg-error/10 p-3 text-sm text-error"
         >
-          {apiError}
+          {apiError || oauthError}
         </div>
       )}
+
+      <GoogleSignInButton label="Continue with Google" />
+      <AuthDivider />
 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
@@ -220,5 +241,19 @@ export default function RegisterPage() {
         {isSubmitting ? "Creating account..." : "Create account"}
       </button>
     </form>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-8">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-accent-primary" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

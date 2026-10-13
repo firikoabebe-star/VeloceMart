@@ -954,3 +954,44 @@ export async function setDefaultAddress(
     throw toApiError(err);
   }
 }
+
+/* ── Contact API ────────────────────────────────────────── */
+
+export type ContactCategory =
+  | "GENERAL"
+  | "ORDER"
+  | "PRODUCT"
+  | "ACCOUNT"
+  | "TECHNICAL"
+  | "PRIVACY";
+
+export interface ContactMessagePayload {
+  name: string;
+  email: string;
+  category: ContactCategory;
+  subject: string;
+  message: string;
+  orderReference?: string;
+}
+
+export async function getContactAvailability(): Promise<{
+  available: boolean;
+}> {
+  try {
+    const { data } = await api.get<{ available: boolean }>("/contact/status");
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function submitContactMessage(
+  payload: ContactMessagePayload,
+): Promise<MessageResponse> {
+  try {
+    const { data } = await api.post<MessageResponse>("/contact", payload);
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}

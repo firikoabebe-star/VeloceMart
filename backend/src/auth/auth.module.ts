@@ -5,7 +5,10 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { EmailService } from './email.service.js';
+import { GoogleAuthGuard } from './guards/google-auth.guard.js';
+import { GoogleCallbackGuard } from './guards/google-callback.guard.js';
 import { AccessTokenStrategy } from './strategies/access-token.strategy.js';
+import { GoogleStrategy } from './strategies/google.strategy.js';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy.js';
 
 @Module({
@@ -26,7 +29,10 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy.js';
     EmailService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    GoogleStrategy,
+    GoogleAuthGuard,
+    GoogleCallbackGuard,
   ],
-  exports: [AuthService],
+  exports: [AuthService, EmailService],
 })
 export class AuthModule {}

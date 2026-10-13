@@ -1,12 +1,15 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAuthStore } from "@/stores/auth-store";
 import { ApiError } from "@/lib/api";
 import type { User } from "@/lib/api";
+import { getGoogleSignInErrorMessage } from "@/features/auth/error-messages";
+import AuthDivider from "@/features/auth/components/AuthDivider";
+import GoogleSignInButton from "@/features/auth/components/GoogleSignInButton";
 
 const AUTH_ROUTES = ["/auth/login", "/auth/register"];
 
@@ -29,6 +32,7 @@ function postLoginPath(redirect: string | null, user: User | null | undefined) {
 
 function LoginForm() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { login, user, isAuthenticated, isLoading } = useAuth();
   const redirect = searchParams.get("redirect");
@@ -37,14 +41,36 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState("");
+  const [oauthError, setOauthError] = useState("");
+  const [googleOnlyAccount, setGoogleOnlyAccount] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const clearedOauthError = useRef(false);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.replace(postLoginPath(redirect, user));
     }
   }, [isLoading, isAuthenticated, router, user, redirect]);
+
+  // The Google callback redirects here with `?error=<code>`. Map the code to
+  // friendly copy once, then strip it from the URL so a refresh or back
+  // navigation can't show a stale error. Other params (e.g. `?redirect=`) are
+  // preserved.
+  useEffect(() => {
+    const code = searchParams.get("error");
+    if (!code || clearedOauthError.current) return;
+    clearedOauthError.current = true;
+    setOauthError(getGoogleSignInErrorMessage(code));
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("error");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }, [searchParams, pathname, router]);
+
+  // A failed email/password attempt takes precedence over an OAuth error.
+  const displayError = apiError || oauthError;
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -61,7 +87,9 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError("");
+    setOauthError("");
     setUnverifiedEmail("");
+    setGoogleOnlyAccount(false);
     if (!validate()) return;
 
     setIsSubmitting(true);
@@ -75,7 +103,13 @@ function LoginForm() {
           setUnverifiedEmail(email);
           setApiError("Please verify your email before signing in.");
         } else if (err.status === 401) {
-          setApiError("Invalid email or password");
+          // Google-only accounts have no password; the backend returns a
+          // dedicated 401 message instead of generic invalid credentials.
+          if (err.message.toLowerCase().includes("uses google sign-in")) {
+            setGoogleOnlyAccount(true);
+          } else {
+            setApiError("Invalid email or password");
+          }
         } else {
           setApiError(err.message);
         }
@@ -114,24 +148,52 @@ function LoginForm() {
         </p>
       </div>
 
-      {apiError && (
+      {googleOnlyAccount ? (
+        // Prominent Google-only-account panel: password login can never
+        // succeed here, so make the Google path (and password reset) obvious.
         <div
           role="alert"
-          className="rounded-lg border border-error/20 bg-error/10 p-3 text-sm text-error"
+          className="space-y-3 rounded-lg border border-warning/30 bg-warning/10 p-4"
         >
-          <p>{apiError}</p>
-          {unverifiedEmail && (
+          <p className="text-sm font-medium text-text-primary">
+            This account uses Google sign-in. Continue with Google, or use
+            Forgot password to create a password.
+          </p>
+          <GoogleSignInButton label="Continue with Google" />
+          <p className="text-sm text-text-secondary">
             <Link
-              href={`/auth/verify-email?email=${encodeURIComponent(
-                unverifiedEmail,
-              )}`}
-              className="mt-2 inline-block font-medium text-accent-strong hover:underline"
+              href="/auth/forgot-password"
+              className="font-medium text-accent-strong hover:underline"
             >
-              Verify your email
+              Forgot password?
             </Link>
-          )}
+          </p>
         </div>
+      ) : (
+        <>
+          {displayError && (
+            <div
+              role="alert"
+              className="rounded-lg border border-error/20 bg-error/10 p-3 text-sm text-error"
+            >
+              <p>{displayError}</p>
+              {unverifiedEmail && (
+                <Link
+                  href={`/auth/verify-email?email=${encodeURIComponent(
+                    unverifiedEmail,
+                  )}`}
+                  className="mt-2 inline-block font-medium text-accent-strong hover:underline"
+                >
+                  Verify your email
+                </Link>
+              )}
+            </div>
+          )}
+
+          <GoogleSignInButton />
+        </>
       )}
+      <AuthDivider />
 
       <div className="space-y-4">
         <div>

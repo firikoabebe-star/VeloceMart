@@ -10,9 +10,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
-import { randomInt } from 'crypto';
+import { randomBytes, randomInt } from 'crypto';
 import type { Response } from 'express';
-import { OtpPurpose } from '../../generated/prisma';
+import type { Profile } from 'passport-google-oauth20';
+import { OtpPurpose, Role } from '../../generated/prisma';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -21,6 +22,9 @@ import { ResendOtpDto } from './dto/resend-otp.dto.js';
 import { ResetPasswordDto } from './dto/reset-password.dto.js';
 import { VerifyEmailDto } from './dto/verify-email.dto.js';
 import { EmailService } from './email.service.js';
+import { GOOGLE_OAUTH_PASSWORD_MARKER } from './google-oauth.constants.js';
+import { GoogleOAuthError } from './google-oauth.error.js';
+import type { GoogleAuthUser } from './google-oauth.util.js';
 import type { JwtPayload } from './interfaces/jwt-payload.interface.js';
 
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -38,6 +42,10 @@ export class AuthService {
     private config: ConfigService,
     private emailService: EmailService,
   ) {}
+
+  getConfigValue(key: string): string | undefined {
+    return this.config.get<string>(key);
+  }
 
   async register(dto: RegisterDto) {
     const existing = await this.prisma.user.findUnique({
@@ -305,6 +313,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (user.password === GOOGLE_OAUTH_PASSWORD_MARKER || !user.password) {
+      throw new UnauthorizedException(
+        'This account uses Google sign-in. Continue with Google, or use Forgot password to create a password.',
+      );
+    }
+
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -331,6 +345,132 @@ export class AuthService {
       lastName: user.lastName,
       role: user.role,
     };
+  }
+
+  // Resolves a Google profile to a local account using Google's stable subject
+  // id (`googleId`) as the primary identity, and only trusts the email when
+  // Google reports it as verified. An existing account is never relinked or
+  // overwritten implicitly: a mismatched identity stops with an explicit,
+  // non-sensitive error that requires manual review.
+  async validateGoogleUser(profile: Profile): Promise<GoogleAuthUser> {
+    const googleId = profile.id?.trim();
+    const primaryEmail = profile.emails?.[0];
+    const email = primaryEmail?.value?.trim().toLowerCase();
+    const emailVerified =
+      primaryEmail?.verified === true || profile._json?.email_verified === true;
+
+    if (!googleId) {
+      throw new GoogleOAuthError('google_id_missing');
+    }
+    if (!email) {
+      throw new GoogleOAuthError('email_missing');
+    }
+    if (!emailVerified) {
+      throw new GoogleOAuthError('google_unverified_email');
+    }
+
+    const existingByGoogleId = await this.prisma.user.findUnique({
+      where: { googleId },
+    });
+
+    if (existingByGoogleId) {
+      // The Google subject is already linked.
+      if (existingByGoogleId.email !== email) {
+        throw new GoogleOAuthError('email_mismatch');
+      }
+
+      const verifiedUser = existingByGoogleId.emailVerified
+        ? existingByGoogleId
+        : await this.prisma.user.update({
+            where: { id: existingByGoogleId.id },
+            data: { emailVerified: true },
+          });
+
+      return this.toGoogleAuthUser(verifiedUser);
+    }
+
+    const existingByEmail = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingByEmail) {
+      // If the existing account already has a different googleId and is linked via another account? Or just means same email
+      // Link the account: set googleId and ensure emailVerified is true
+      // Security: if account was not verified, replace password with unusable random hash
+      if (existingByEmail.googleId && existingByEmail.googleId !== googleId) {
+        throw new GoogleOAuthError('email_mismatch');
+      }
+      const updates: any = {
+        googleId,
+        emailVerified: true,
+      };
+      if (!existingByEmail.emailVerified) {
+        const randomHash = await bcrypt.hash(
+          randomBytes(32).toString('hex'),
+          10,
+        );
+        updates.password = randomHash;
+      }
+      const linked = await this.prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: updates,
+      });
+      return this.toGoogleAuthUser(linked);
+    }
+
+    const { firstName, lastName } = this.deriveGoogleName(profile);
+
+    try {
+      const created = await this.prisma.user.create({
+        data: {
+          email,
+          googleId,
+          // Not a bcrypt hash, so password login can never succeed for this
+          // account while still satisfying the required `password` column.
+          password: GOOGLE_OAUTH_PASSWORD_MARKER,
+          firstName,
+          lastName,
+          role: Role.CUSTOMER,
+          emailVerified: true,
+        },
+      });
+      return this.toGoogleAuthUser(created);
+    } catch (error) {
+      // Two concurrent first-time logins can race on the unique email or the
+      // unique Google id. Re-read by googleId and continue only when the
+      // winning row is the same identity; otherwise report a safe conflict.
+      if (this.isUniqueConstraintError(error)) {
+        const raced = await this.prisma.user.findUnique({
+          where: { googleId },
+        });
+        if (raced && raced.email === email) {
+          return this.toGoogleAuthUser(raced);
+        }
+        if (raced) {
+          throw new GoogleOAuthError('email_mismatch');
+        }
+        const racedByEmail = await this.prisma.user.findUnique({
+          where: { email },
+        });
+        if (racedByEmail) {
+          return this.toGoogleAuthUser(racedByEmail);
+        }
+      }
+      throw error;
+    }
+  }
+
+  // Issues the same access/refresh cookies as every other login path so Google
+  // sessions share the exact token, tokenVersion and cookie rules.
+  completeGoogleLogin(user: GoogleAuthUser, res: Response) {
+    this.setTokenCookies(
+      res,
+      user.id,
+      user.email,
+      user.role,
+      user.tokenVersion,
+    );
+    return { id: user.id, email: user.email, role: user.role };
   }
 
   refresh(
@@ -405,6 +545,46 @@ export class AuthService {
       }
     }
     return 'UnknownError';
+  }
+
+  private toGoogleAuthUser(user: {
+    id: string;
+    email: string;
+    role: string;
+    tokenVersion: number;
+  }): GoogleAuthUser {
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
+    };
+  }
+
+  private deriveGoogleName(profile: Profile): {
+    firstName: string;
+    lastName: string;
+  } {
+    const given = profile.name?.givenName?.trim();
+    const family = profile.name?.familyName?.trim();
+    if (given || family) {
+      return {
+        firstName: given && given.length > 0 ? given : 'Google',
+        lastName: family ?? '',
+      };
+    }
+
+    const display = profile.displayName?.trim() ?? '';
+    const [first = 'Google', ...rest] = display.split(/\s+/).filter(Boolean);
+    return { firstName: first, lastName: rest.join(' ') };
+  }
+
+  private isUniqueConstraintError(error: unknown): boolean {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      (error as { code?: unknown }).code === 'P2002'
+    );
   }
 
   private setTokenCookies(

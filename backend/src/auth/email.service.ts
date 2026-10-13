@@ -41,11 +41,27 @@ export class EmailService {
     );
   }
 
+  // Forwards a visitor's support message to the configured inbox. The reply-to
+  // is the visitor's address so an operator can answer directly, while the
+  // authenticated `from` stays on the verified sending domain. `replyTo` is
+  // validated by the provider and never used as the envelope sender.
+  async sendContactMessage(params: {
+    to: string;
+    replyTo: string;
+    subject: string;
+    html: string;
+  }): Promise<void> {
+    await this.deliver(params.to, params.subject, params.html, 'contact', {
+      replyTo: params.replyTo,
+    });
+  }
+
   private async deliver(
     to: string,
     subject: string,
     html: string,
     label: string,
+    options: { replyTo?: string } = {},
   ): Promise<void> {
     try {
       const { error } = await this.resend.emails.send({
@@ -53,6 +69,7 @@ export class EmailService {
         to,
         subject,
         html,
+        ...(options.replyTo ? { replyTo: options.replyTo } : {}),
       });
 
       if (error) {

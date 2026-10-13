@@ -126,3 +126,46 @@ export function getResetPasswordErrorMessage(err: unknown): string {
 
   return PASSWORD_RESET_ERROR_MESSAGES.reset;
 }
+
+/* ── Google Sign-In ──────────────────────────────────────── */
+
+export const GOOGLE_SIGN_IN_ERROR_MESSAGES = {
+  unverifiedEmail:
+    "Your Google email isn't verified. Please verify it with Google, then try again.",
+  passwordAccount:
+    "This email already has a password account. Please sign in with your email and password instead.",
+  emailMismatch:
+    "This Google account no longer matches the linked account. Please sign in with your email and password.",
+  cancelled:
+    "Google sign-in was cancelled. Please try again or sign in with your email and password.",
+  unavailable:
+    "Google sign-in is currently unavailable. Please try again later or sign in with your email and password.",
+  generic:
+    "We couldn't complete Google sign-in. Please try again or sign in with your email and password.",
+} as const;
+
+/**
+ * Maps the non-sensitive `error` code the backend appends to the post-OAuth
+ * redirect (`/auth/login?error=...`) to safe, friendly copy. Codes come from
+ * `GoogleOAuthErrorCode` on the backend; any unknown or missing code falls
+ * back to a generic message, so backend detail is never surfaced.
+ */
+export function getGoogleSignInErrorMessage(code: string | null): string {
+  switch (code) {
+    case "google_unverified_email":
+    case "email_not_verified":
+      return GOOGLE_SIGN_IN_ERROR_MESSAGES.unverifiedEmail;
+    case "account_conflict":
+      return GOOGLE_SIGN_IN_ERROR_MESSAGES.passwordAccount;
+    case "email_mismatch":
+      return GOOGLE_SIGN_IN_ERROR_MESSAGES.emailMismatch;
+    case "access_denied":
+      return GOOGLE_SIGN_IN_ERROR_MESSAGES.cancelled;
+    case "not_configured":
+    case "oauth_failed":
+    case "state_mismatch":
+      return GOOGLE_SIGN_IN_ERROR_MESSAGES.unavailable;
+    default:
+      return GOOGLE_SIGN_IN_ERROR_MESSAGES.generic;
+  }
+}

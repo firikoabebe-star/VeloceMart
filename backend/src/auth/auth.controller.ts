@@ -29,6 +29,12 @@ import { RegisterDto } from './dto/register.dto.js';
 import { ResendOtpDto } from './dto/resend-otp.dto.js';
 import { ResetPasswordDto } from './dto/reset-password.dto.js';
 import { VerifyEmailDto } from './dto/verify-email.dto.js';
+import { GoogleAuthGuard } from './guards/google-auth.guard.js';
+import { GoogleCallbackGuard } from './guards/google-callback.guard.js';
+import { DEFAULT_FRONTEND_ORIGIN } from './google-oauth.constants.js';
+import {
+  type GoogleCallbackRequest,
+} from './google-oauth.util.js';
 import type { AuthenticatedRequest } from './interfaces/authenticated-request.interface.js';
 
 @ApiTags('Auth')
@@ -134,6 +140,50 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.authService.login(dto, res);
+  }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: 'Start Google Sign-In (redirects to Google)' })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirects to Google consent screen',
+  })
+  googleAuth() {
+    // The guard generates the OAuth state and performs the redirect.
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleCallbackGuard)
+  @ApiOperation({ summary: 'Google Sign-In callback (redirects to frontend)' })
+  @ApiResponse({ status: 302, description: 'Redirects back to the frontend' })
+  googleCallback(
+    @Req() req: GoogleCallbackRequest,
+    @Res() res: Response,
+  ): void {
+    // On any failure the guard has already redirected with a safe reason.
+    if (!req.user) {
+      return;
+    }
+
+    this.authService.completeGoogleLogin(req.user, res);
+    const base =
+      this.authService.getConfigValue?.('FRONTEND_REDIRECT_URL') ??
+      process.env.FRONTEND_REDIRECT_URL ??
+      process.env.FRONTEND_URL?.split(',')[0] ??
+      DEFAULT_FRONTEND_ORIGIN;
+    const destination =
+      req.user.role === 'ADMIN' ? '/admin' : '/account';
+    try {
+      const url = new URL(destination, base.trim());
+      res.redirect(url.toString());
+    } catch {
+      const normalizedBase = base.trim().replace(/\/$/, '');
+      const normalizedPath = destination.startsWith('/')
+        ? destination
+        : `/${destination}`;
+      res.redirect(`${normalizedBase}${normalizedPath}`);
+    }
   }
 
   @HttpCode(HttpStatus.OK)

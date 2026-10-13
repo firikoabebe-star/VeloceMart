@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 
 /* ── Data ─────────────────────────────────────────────────── */
 const footerLinks = {
@@ -19,10 +17,9 @@ const footerLinks = {
     heading: "Customer Service",
     links: [
       { label: "Help Center", href: "/help" },
-      { label: "Order Tracking", href: "/orders/track" },
-      { label: "Shipping & Delivery", href: "/help/shipping" },
-      { label: "Returns & Exchanges", href: "/help/returns" },
-      { label: "Size Guide", href: "/help/size-guide" },
+      { label: "Order Status", href: "/help/orders-and-order-status" },
+      { label: "Shipping & Delivery", href: "/help/shipping-delivery-and-returns" },
+      { label: "Returns & Exchanges", href: "/help/shipping-delivery-and-returns" },
       { label: "Contact Us", href: "/contact" },
     ],
   },
@@ -30,11 +27,9 @@ const footerLinks = {
     heading: "Company",
     links: [
       { label: "About Us", href: "/about" },
-      { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
-      { label: "Sustainability", href: "/sustainability" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
+      { label: "Sitemap", href: "/sitemap" },
     ],
   },
 };
@@ -87,84 +82,23 @@ const socialLinks = [
   },
 ];
 
-const paymentIcons = [
-  { label: "Visa", icon: "V" },
-  { label: "Mastercard", icon: "M" },
-  { label: "Amex", icon: "A" },
-  { label: "PayPal", icon: "P" },
-  { label: "Apple Pay", icon: "AP" },
-];
-
 /* ── Component ────────────────────────────────────────────── */
 export default function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setSubscribed(true);
-    setEmail("");
-    setTimeout(() => setSubscribed(false), 3000);
-  };
-
   return (
     <footer className="border-t border-border/20 bg-background">
-      {/* Newsletter Section */}
-      <div className="border-b border-border/20 bg-surface/50">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex w-full flex-col items-center justify-between gap-6 sm:flex-row">
-            <div>
-              <h3 className="text-lg font-semibold text-text-primary">
-                Join the Veloce Community
-              </h3>
-              <p className="mt-1 text-sm text-text-secondary">
-                Be the first to know about new arrivals, exclusive drops, and member-only offers.
-              </p>
-            </div>
-            <form
-              onSubmit={handleNewsletterSubmit}
-              className="relative flex w-full max-w-md flex-col gap-2"
-            >
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-text-primary placeholder-text-muted transition-all duration-200 focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/40"
-                />
-                <button
-                  type="submit"
-                  className="shrink-0 rounded-lg bg-accent-primary px-5 py-2.5 text-sm font-semibold text-on-accent transition-all duration-150 hover:bg-accent-primary/90 hover:shadow-glow-accent"
-                >
-                  Subscribe
-                </button>
-              </div>
-              {subscribed && (
-                <p className="absolute -bottom-7 left-0 text-sm text-success">
-                  ✓ Thanks for subscribing!
-                </p>
-              )}
-            </form>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer Columns */}
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <a href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-primary">
                 <span className="text-sm font-bold text-on-accent">V</span>
               </div>
               <span className="text-lg font-bold tracking-tight text-text-primary">
                 Veloce<span className="text-accent-strong">Mart</span>
               </span>
-            </a>
+            </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-text-secondary">
               Premium fashion and accessories for the modern individual. Curated collections
               designed to elevate your everyday style.
@@ -185,24 +119,6 @@ export default function Footer() {
                 </a>
               ))}
             </div>
-
-            {/* Trust badge */}
-            <div className="mt-6">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-text-muted">
-                We Accept
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {paymentIcons.map((pm) => (
-                  <span
-                    key={pm.label}
-                    className="flex h-8 w-10 items-center justify-center rounded-md border border-border/30 bg-surface text-[10px] font-bold tracking-tight text-text-muted"
-                    title={pm.label}
-                  >
-                    {pm.icon}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Link Columns */}
@@ -214,12 +130,12 @@ export default function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <a
+                    <Link
                       href={link.href}
                       className="text-sm text-text-secondary transition-colors duration-150 hover:text-accent-strong"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -235,15 +151,15 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} VeloceMart. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="/privacy" className="text-xs text-text-muted transition-colors hover:text-text-secondary">
+            <Link href="/privacy" className="text-xs text-text-muted transition-colors hover:text-text-secondary">
               Privacy
-            </a>
-            <a href="/terms" className="text-xs text-text-muted transition-colors hover:text-text-secondary">
+            </Link>
+            <Link href="/terms" className="text-xs text-text-muted transition-colors hover:text-text-secondary">
               Terms
-            </a>
-            <a href="/sitemap" className="text-xs text-text-muted transition-colors hover:text-text-secondary">
+            </Link>
+            <Link href="/sitemap" className="text-xs text-text-muted transition-colors hover:text-text-secondary">
               Sitemap
-            </a>
+            </Link>
             <span className="flex items-center gap-1.5 text-xs text-text-muted">
               <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
